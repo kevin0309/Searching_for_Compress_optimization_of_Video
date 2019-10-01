@@ -3,33 +3,33 @@
 프로젝트의 주제는 웹 스트리밍을 위한 영상 압축 손실 과정에서 최적의 설정값을 찾기위한 연구이다.<br>
 <br>
 코딩작업은 branch를 만들어서 작업하고<br>
-절대 임의로 master branch를 수정하지 말것!!
+절대 임의로 master branch를 수정하지 말것!!<br>
+<br>
+## 프로젝트 참여자
+단국대학교 3학년 32141868 박유현<br>
+단국대학교 3학년 32144697 최광진<br>
 
-##프로젝트 참여자
-단국대학교 3학년 32141868 박유현
-단국대학교 3학년 32144697 최광진
-
-##프로젝트 구성
-본 프로젝트는 크게 세가지의 어플리케이션과 데이터베이스서버로 구성되어있음.
-1. SCV : 관리자 및 사용자에게 UI를 제공해주기 위한 웹 어플리케이션
+## 프로젝트 구성
+본 프로젝트는 크게 세가지의 어플리케이션과 데이터베이스서버로 구성되어있음.<br>
+### 1. SCV : 관리자 및 사용자에게 UI를 제공해주기 위한 웹 어플리케이션
 ### 개발/실행 환경
 - OS : Microsoft Windows 10
 - Language : JRE 1.8
 - IDE : Eclipse Jee Photon
 - Web Server : Tomcat 8.0
-2. EncodingServer : 인코딩 연산을 진행하는 서버
+### 2. EncodingServer : 인코딩 연산을 진행하는 서버
 ### 개발/실행 환경
 - OS : Microsoft Windows 10
 - Language : JRE 1.8
 - IDE : Eclipse Jee Photon
 - Web Server : Tomcat 8.0
-3. LearningServer : 영상의 품질을 분류 및 학습하는 서버
+### 3. LearningServer : 영상의 품질을 분류 및 학습하는 서버
 ### 개발/실행 환경
 - OS : 
 - Language : Python
 - IDE : 
 - Web Server : 
-4. 데이터베이스 서버
+### 4. 데이터베이스 서버
 ### 개발/실행 환경
 - OS : Microsoft Windows 10
 - DBMS : MySQL 8.0
