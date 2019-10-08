@@ -15,8 +15,8 @@
 본 프로젝트는 크게 세가지의 어플리케이션과 데이터베이스서버로 구성되어있음.<br>
 ### 1. SCV
 관리자 및 사용자에게 UI를 제공해주기 위한 웹 어플리케이션
-```
 ### 개발/실행 환경
+```
 - OS : Microsoft Windows 10
 - Language : JRE 1.8
 - IDE : Eclipse Jee Photon
@@ -24,8 +24,8 @@
 ```
 ### 2. EncodingServer
 인코딩 연산을 진행하는 서버
-```
 ### 개발/실행 환경
+```
 - OS : Microsoft Windows 10
 - Language : JRE 1.8
 - IDE : Eclipse Jee Photon
@@ -33,16 +33,16 @@
 ```
 ### 3. LearningServer
 인코딩 연산 결과물을 분류 및 학습하는 서버
-```
 ### 개발/실행 환경
+```
 - OS : 
 - Language : Python
 - IDE : 
 - Web Server : 
 ```
 ### 4. 데이터베이스 서버
-```
 ### 개발/실행 환경
+```
 - OS : Microsoft Windows 10
 - DBMS : MySQL 8.0
 - IP Address : 112.186.29.44
@@ -68,15 +68,15 @@
 ```
 
 ## 사용중인 외부 API
-```
 ### Back-end
+```
 - FFMPEG (https://www.ffmpeg.org/)
 - COS.jar
 - JSON-simple-1.1.1.jar
 - juniversechardet-2.1.0.jar (https://github.com/albfernandez/juniversalchardet)
 ```
-```
 ### Front-end
+```
 - jQuery (https://jquery.com/)
 - Bootstrap (https://getbootstrap.com/)
 - toastr (https://github.com/CodeSeven/toastr)
