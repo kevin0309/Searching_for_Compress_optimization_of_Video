@@ -47,7 +47,7 @@
 - DBMS : MySQL 8.0
 - IP Address : 112.186.29.44
 - Port : 3306
-- DB name : 
+- DB name : scv
 ```
 
 ## 이클립스 초기 개발환경 설정
