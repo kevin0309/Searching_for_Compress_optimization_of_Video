@@ -13,6 +13,7 @@ public class ServerHDD {
 	private String token;
 	private String path;
 	private long driveTotalSpace;
+	private boolean currentUse;
 	
 	/**
 	 * 인코딩에서 사용될 하드디스크에 대한 정보 
@@ -26,6 +27,7 @@ public class ServerHDD {
 		this.token = token;
 		this.path = path;
 		this.driveTotalSpace = new File(token+":/").getTotalSpace();
+		this.currentUse = false;
 	}
 	/**
 	 * 인코딩에서 사용될 하드디스크에 대한 정보 
@@ -62,4 +64,19 @@ public class ServerHDD {
 	public long getDriveUsableSpace() {
 		return new File(token+":/").getUsableSpace();
 	}
+	/**
+	 * 현재 사용중인 하드디스크인지 (현재 서버 어플리케이션 기준)
+	 * @return true if 사용중
+	 */
+	public boolean isCurrentUse() {
+		return currentUse;
+	}
+	/**
+	 * 현재 사용중인 하드디스크인지 (현재 서버 어플리케이션 기준)
+	 * @param currentUse true if 사용중
+	 */
+	public void setCurrentUse(boolean currentUse) {
+		this.currentUse = currentUse;
+	}
+	
 }
