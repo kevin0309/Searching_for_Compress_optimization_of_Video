@@ -25,8 +25,10 @@ public class ClassFounder {
 			//.list() : directroy 디렉토리 내에 있는 파일과 디렉토리 이름을 문자열 배열로 반환한다.
 			for (final String file : files) {
 				if (file.endsWith(".class")) {
+					if (file.indexOf("$") > -1)
+						continue;
+					
 					try {
-						
 						String tempPath = directory.getPath();		//디렉토리의 추상경로명을 tempPath에 담는다.
 						if (tempPath.indexOf("classes") > -1)
 							tempPath = tempPath.split("classes")[1];
@@ -46,8 +48,8 @@ public class ClassFounder {
 								chk = true;
 						if (chk)
 							classes.add(tempClass);
-					} catch (final NoClassDefFoundError e) {
-						e.printStackTrace();
+					} catch (Exception e) {
+						throw new RuntimeException(e);
 					}
 				}
 				else if ((tmpDirectory = new File(directory, file)).isDirectory()) {

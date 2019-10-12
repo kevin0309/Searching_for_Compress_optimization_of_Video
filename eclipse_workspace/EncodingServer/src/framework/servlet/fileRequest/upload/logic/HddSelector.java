@@ -14,7 +14,14 @@ import framework.util.LogUtil;
  */
 public class HddSelector {
 	
-	private HddSelector() {}
+	private static ArrayList<Integer> hddCntList;
+	private ServerHDD currentUse;
+	private int currentUseIndex;
+	private HddSelector() {
+		hddCntList = new ArrayList<>();
+		for (int i = 0; i < ServerConfig.getHDDList().size(); i++)
+			hddCntList.add(0);
+	}
 	
 	private static class LazyHolder {
 		private static final HddSelector INSTANCE = new HddSelector();
@@ -40,19 +47,54 @@ public class HddSelector {
 	public ServerHDD getHDD(long requestVolume) throws NotEnoughSpaceForHddException {
 		ArrayList<ServerHDD> hddArr = ServerConfig.getHDDList();
 		
-		for (ServerHDD hdd : hddArr)
-			if (!hdd.isCurrentUse())
-				if ((hdd.getDriveUsableSpace() - requestVolume) / hdd.getDriveTotalSpace() < 0.8)
-					return hdd;
-		
-		for (ServerHDD hdd : hddArr)
-			if (!hdd.isCurrentUse())
-				if ((hdd.getDriveUsableSpace() - requestVolume) / hdd.getDriveTotalSpace() < 0.9) {
-					LogUtil.printLog("Server HDD storage is nearly full.(over 80%)");
-					return hdd;
+		for (int i = 0; i < hddArr.size(); i++)
+			if (!hddArr.get(i).isCurrentUse())
+				if ((hddArr.get(i).getDriveUsableSpace() - requestVolume) / hddArr.get(i).getDriveTotalSpace() < 0.8) {
+					selectHdd(hddArr.get(i), i, requestVolume);
+					return hddArr.get(i);
 				}
+		
+		for (int i = 0; i < hddArr.size(); i++)
+			if ((hddArr.get(i).getDriveUsableSpace() - requestVolume) / hddArr.get(i).getDriveTotalSpace() < 0.8) {
+				selectHdd(hddArr.get(i), i, requestVolume);
+				return hddArr.get(i);
+			}
+		
+		for (int i = 0; i < hddArr.size(); i++)
+			if (!hddArr.get(i).isCurrentUse())
+				if ((hddArr.get(i).getDriveUsableSpace() - requestVolume) / hddArr.get(i).getDriveTotalSpace() < 0.9) {
+					selectHdd(hddArr.get(i), i, requestVolume);
+					LogUtil.printLog("Server HDD storage is nearly full.(over 80%)");
+					return hddArr.get(i);
+				}
+		
+		for (int i = 0; i < hddArr.size(); i++)
+			if ((hddArr.get(i).getDriveUsableSpace() - requestVolume) / hddArr.get(i).getDriveTotalSpace() < 0.9) {
+				selectHdd(hddArr.get(i), i, requestVolume);
+				LogUtil.printLog("Server HDD storage is nearly full.(over 80%)");
+				return hddArr.get(i);
+			}
 		
 		LogUtil.printErrLog("Server HDD storage is full.(over 90%) Access denied for system stability.");
 		throw new NotEnoughSpaceForHddException();
+	}
+	
+	private void selectHdd(ServerHDD hdd, int i, long requestVolume) {
+		currentUse = hdd;
+		currentUseIndex = i;
+		currentUse.setCurrentUse(true);
+		hddCntList.set(i, hddCntList.get(i)+1);
+		hdd.setDriveUsableSpace(currentUse.getDriveUsableSpace() - requestVolume);
+	}
+	
+	/**
+	 * 사용중인 하드디스크를 사용가능상태로 전환
+	 */
+	public void close() {
+		hddCntList.set(currentUseIndex, hddCntList.get(currentUseIndex)-1);
+		if (hddCntList.get(currentUseIndex) < 1) {
+			hddCntList.set(currentUseIndex, 0);
+			currentUse.setCurrentUse(false);
+		}
 	}
 }

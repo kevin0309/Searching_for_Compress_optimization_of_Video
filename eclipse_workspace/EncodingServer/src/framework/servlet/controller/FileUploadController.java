@@ -73,12 +73,11 @@ public class FileUploadController extends HttpServlet{
 	 * 서블릿 요청을 처리하는 메서드
 	 * @param req
 	 * @param resp
-	 * @param isGet
 	 * @throws ServletException
 	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
-	private void process(HttpServletRequest req, HttpServletResponse resp, boolean isGet) throws ServletException, IOException {
+	private void process(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String command = req.getRequestURI();
 		if (command.indexOf(req.getContextPath()) == 0)
 			command = command.substring(req.getContextPath().length());
@@ -100,7 +99,8 @@ public class FileUploadController extends HttpServlet{
 				obj.put("resultData", "Upload complete.");
 				obj.put("statusMsg", "OK");
 				logMsg += "Status : Upload complete";
-				logMsg += ", ContentType: "+res;
+				if (res != null)
+					logMsg += ", ContentType: "+res;
 			} catch (Exception e) {
 				obj.put("statusMsg", "Server Logic error occured. ("+e.getLocalizedMessage()+")");
 				logMsg += "Status : Server Logic error occured. ("+e.getMessage()+")";
@@ -115,30 +115,30 @@ public class FileUploadController extends HttpServlet{
 	}
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+		resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 	}
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		process(req,resp,false);
+		process(req,resp);
 	}
 	@Override
 	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+		resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 	}
 	@Override
 	protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+		resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 	}
 	@Override
 	protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);;
+		resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);;
 	}
 	@Override
 	protected void doPut(HttpServletRequest req,HttpServletResponse resp) throws ServletException, IOException {
-		resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+		resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 	}
 	@Override
 	protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+		resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 	}	
 }
