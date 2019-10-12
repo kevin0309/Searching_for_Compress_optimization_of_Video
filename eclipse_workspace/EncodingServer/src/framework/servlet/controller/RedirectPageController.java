@@ -105,6 +105,7 @@ public class RedirectPageController extends HttpServlet{
 			
 			if(mapper == null) {
 				LogUtil.printErrLog("handler Returned Null Object");
+				resp.sendError(HttpServletResponse.SC_NOT_FOUND);
 				return;
 			}
 			

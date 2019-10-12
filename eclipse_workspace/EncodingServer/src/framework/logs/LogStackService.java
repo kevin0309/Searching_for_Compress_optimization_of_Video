@@ -82,9 +82,9 @@ public class LogStackService implements ServletContextListener {
 		if (!ServerConfig.isDev()) {
 			try {
 				if (isTerminate)
-					dao.insertNewLogFile(year, month, date, hour, min, -1, curDate);
+					dao.insertNewLogFile(ServerConfig.getServiceContainerName(), ServerConfig.getServerId(), year, month, date, hour, min, -1, curDate);
 				else
-					dao.insertNewLogFile(year, month, date, hour, min, interval, curDate);
+					dao.insertNewLogFile(ServerConfig.getServiceContainerName(), ServerConfig.getServerId(), year, month, date, hour, min, interval, curDate);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

@@ -15,12 +15,14 @@ import framework.jdbc.DBMng;
  */
 public class LogDAO {
 
-	public void insertNewLogFile(String year, String month, String date, String hour, String min, int duration, Date regDate) throws SQLException {
+	public void insertNewLogFile(String appName, int serverID, String year, String month, String date, String hour, String min, int duration, Date regDate) throws SQLException {
 		DBMng db = null;
 		
 		try {
 			db = new DBMng();
-			db.setQuery("insert into server_log_stack values(null, ?, ?, ?, ?, ?, ?, ?)");
+			db.setQuery("insert into server_log_stack values(null, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			db.setString(appName);
+			db.setInt(serverID);
 			db.setString(year);
 			db.setString(month);
 			db.setString(date);
@@ -37,7 +39,7 @@ public class LogDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public JSONArray getLogList() throws SQLException {
+	public JSONArray getLogJSONList() throws SQLException {
 		DBMng db = null;
 		JSONArray res = new JSONArray();
 		try {
@@ -47,6 +49,8 @@ public class LogDAO {
 			
 			while (db.next()) {
 				JSONObject temp = new JSONObject();
+				temp.put("appName", db.getString("app_name"));
+				temp.put("serverId", db.getString("storage_server_id"));
 				temp.put("year", db.getString("year"));
 				temp.put("month", db.getString("month"));
 				temp.put("date", db.getString("date"));

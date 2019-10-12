@@ -1,13 +1,21 @@
 package framework.init;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import framework.init.initDAO.StorageServer;
+import framework.init.initDAO.StorageServerDAO;
+import framework.util.ByteUtil;
 import framework.util.FileUtil;
 import framework.util.LogUtil;
 import framework.util.PropertiesReader;
@@ -32,15 +40,26 @@ public class InitConfig implements ServletContextListener {
 		
 		ServerConfig.setDateFormat(defProp.getProperty("dateFormat"));
 
+		//서버 닉네임을 설정파일이름으로 설정
+		String configFileDest = tempInitProp.getProperty("fileDestination");
+		String[] temp = configFileDest.split("/");
+		configFileDest = temp[temp.length-1];
+		ServerConfig.setServerNickname(configFileDest.split("\\.")[0]);
+		
 		String containerName = sce.getServletContext().getServletContextName();
-		if (containerName.equals("ROOT"))
+		if (containerName.equals("ROOT")) {
 			ServerConfig.setServiceContainerName("");
-		else
+			ServerConfig.setServerPortNum(80);
+		}
+		else {
 			ServerConfig.setServiceContainerName("/"+containerName);
+			ServerConfig.setServerPortNum(8080);
+		}
 		ServerConfig.setProjectVersion(defProp.getProperty("projectVersion"));
 		ServerConfig.setLogStackDirectory(initProp.getProperty("logStackDirectory"));
 		ServerConfig.setLogStackInterval(PropertiesReader.getIntProperty(defProp, "logStackInterval", 0));
 		ServerConfig.setIsDev(!initProp.getProperty("devmode").equals("true"));
+		setNetworkAddress();
 		
 		/*인코딩서버 전용설정********************************************/
 		ServerConfig.setFFMPEGPath(initProp.getProperty("FFMPEGPath")+"/ffmpeg.exe");
@@ -58,6 +77,102 @@ public class InitConfig implements ServletContextListener {
 		}
 		ServerConfig.setHDDList(hddList);
 		initFileStorage();
+	}
+	
+	/**
+	 * 서버PC MAC 주소를 가져옴
+	 * @return MAC 주소 hex String
+	 * @throws UnknownHostException
+	 * @throws SocketException
+	 */
+	private static void setNetworkAddress() {
+		InetAddress ip;
+		try {
+			//ip 확인
+			ip = InetAddress.getLocalHost();
+			ServerConfig.setIpAddr(ip.getHostAddress());
+			//ip로부터 mac주소 확인
+			NetworkInterface netIf = NetworkInterface.getByInetAddress(ip);
+			ServerConfig.setMacAddr(ByteUtil.byteArrayToHexString(netIf.getHardwareAddress()));
+		} catch (UnknownHostException | SocketException e) {
+			e.printStackTrace();
+			LogUtil.printErrLog("Can't find server MAC address. plz check your network interface.");
+		}
+	}
+	
+	/**
+	 * 서버 초기 설정 중 DB 접근권한이 필요한 기능은 여기에 정의
+	 * @see framework.jdbc.DBMngScheduler
+	 */
+	public static void initConfigWithDBAcessRequired() {
+		setServerStatus();
+		ServerConfig.setServerId(getServerId());
+	}
+	
+	/**
+	 * DB의 storage_server 테이블에 등록되지 않은 서버라면 등록하고, 온라인상태로 변경
+	 */
+	private static void setServerStatus() {
+		StorageServerDAO dao = new StorageServerDAO();
+		StorageServer server = dao.findExistedServerByMacAddr(ServerConfig.getMacAddr());
+		//등록된 mac 주소가 없을경우
+		if (server == null) {
+			LogUtil.printLog("The server profile not found at DB. Make new profile with this server.");
+			dao.insertNewServer(ServerConfig.getServerNickname(), ServerConfig.getIpAddr()+":"+ServerConfig.getServerPortNum(),
+					ServerConfig.getMacAddr(), 1, new Date());
+		}
+		else {
+			if (server.getStatus() == 1)
+				LogUtil.printErrLog("Unknown error! server status is already online.");
+			else if (server.getStatus() == -1)
+				LogUtil.printErrLog("Unknown error! server status is error occured.");
+			
+			LogUtil.printLog("Update server profile status to online.");
+			dao.updateExistedServerByMacAddr(ServerConfig.getServerNickname(), ServerConfig.getIpAddr()+":"+ServerConfig.getServerPortNum(), 
+					ServerConfig.getMacAddr(), 1, new Date());
+		}
+	}
+	
+	/**
+	 * DB의 storage_server 테이블에 등록된 서버의 seq값을 반환
+	 * @return storage_server.seq
+	 */
+	private static int getServerId() {
+		StorageServerDAO dao = new StorageServerDAO();
+		StorageServer server = dao.findExistedServerByMacAddr(ServerConfig.getMacAddr());
+		return server.getSeq();
+	}
+	
+	/**
+	 * 서버 종료 시 DB 접근권한이 필요한 기능은 여기에 정의
+	 * @see framework.jdbc.DBMngScheduler
+	 */
+	public static void destroyConfigWithDBAcessRequired() {
+		setServerStatusToOffline();
+	}
+	
+	/**
+	 * DB의 storage_server 테이블에 등록된 서버의 status를 0으로 수정(오프라인상태)
+	 */
+	private static void setServerStatusToOffline() {
+		StorageServerDAO dao = new StorageServerDAO();
+		LogUtil.printLog("Update server profile status to offline.");
+		dao.updateExistedServerByMacAddr(ServerConfig.getServerNickname(), ServerConfig.getIpAddr()+":"+ServerConfig.getServerPortNum(), 
+				ServerConfig.getMacAddr(), 0, new Date());
+	}
+	
+	/**
+	 * 필터에서 설정된 값으로 전역설정값 적용시키기 위한 메서드
+	 * @param charSet
+	 * @see framework.servlet.CharsetEncodingFilter
+	 */
+	public static void setServerEncodingCharSet(String charSet) {
+		ServerConfig.setServerEncodingCharSet(charSet);
+	}
+	
+	@Override
+	public void contextDestroyed(ServletContextEvent arg0) {
+		
 	}
 
 	/**
@@ -86,19 +201,5 @@ public class InitConfig implements ServletContextListener {
 			}
 		}
 		LogUtil.printLog("The hard disks are ready for use.");
-	}
-	
-	/**
-	 * 필터에서 설정된 값으로 전역설정값 적용시키기 위한 메서드
-	 * @param charSet
-	 * @see framework.servlet.CharsetEncodingFilter
-	 */
-	public static void setServerEncodingCharSet(String charSet) {
-		ServerConfig.setServerEncodingCharSet(charSet);
-	}
-	
-	@Override
-	public void contextDestroyed(ServletContextEvent arg0) {
-		
 	}
 }

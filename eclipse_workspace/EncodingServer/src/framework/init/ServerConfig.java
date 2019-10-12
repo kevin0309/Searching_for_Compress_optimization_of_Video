@@ -11,6 +11,7 @@ import framework.util.LogUtil;
  */
 public class ServerConfig {
 	
+	private static String serverNickname;
 	private static String serviceContainerName;
 	private static String projectVersion;
 	private static String dateFormat;
@@ -18,12 +19,27 @@ public class ServerConfig {
 	private static String logStackDirectory;
 	private static int logStackInterval;
 	private static boolean isDev;
+	private static int serverId;
+	private static String ipAddr;
+	private static int serverPortNum;
+	private static String macAddr;
 	
 	/*인코딩서버 전용설정********************************************/
 	private static String ffmpegPath;
 	private static String ffprobePath;
 	private static ArrayList<ServerHDD> HDDList;
 
+	/**
+	 * 서버 전역설정값
+	 * @return 서버 닉네임을 설정파일이름으로 설정
+	 */
+	public static String getServerNickname() {
+		return serverNickname;
+	}
+	static void setServerNickname(String serverNickname) {
+		ServerConfig.serverNickname = serverNickname;
+		LogUtil.printLog("The server nickname has been set to [" + serverNickname + "].");
+	}
 	/**
 	 * 서버 전역설정값
 	 * @return 서비스 컨테이너 이름 ROOT의 경우 ""로 대체됨
@@ -107,6 +123,50 @@ public class ServerConfig {
 		System.out.println("***|  *   *  *       *  *        * * * *  *    *  *   *  *       |***");
 		System.out.println("***|  ***    *****    **         *  *  *   ****   ***    *****   |***");
 		LogUtil.printLog("The server now runs in developer mode.");
+	}
+	/**
+	 * 서버 전역설정값
+	 * @return DB에 등록되어있는 storage_server.seq 값
+	 */
+	public static int getServerId() {
+		return serverId;
+	}
+	static void setServerId(int serverId) {
+		ServerConfig.serverId = serverId;
+		LogUtil.printLog("The server id has been set to [" + serverId + "].");
+	}
+	/**
+	 * 서버 전역설정값
+	 * @return 현재 서버의 IP 주소
+	 */
+	public static String getIpAddr() {
+		return ipAddr;
+	}
+	static void setIpAddr(String ipAddr) {
+		ServerConfig.ipAddr = ipAddr;
+		LogUtil.printLog("The server IP address is [" + ipAddr + "].");
+	}
+	/**
+	 * 서버 전역설정값
+	 * @return 현재 서버의 port number
+	 */
+	public static int getServerPortNum() {
+		return serverPortNum;
+	}
+	static void setServerPortNum(int serverPortNum) {
+		ServerConfig.serverPortNum = serverPortNum;
+		LogUtil.printLog("The server port number is [" + serverPortNum + "].");
+	}
+	/**
+	 * 서버 전역설정값
+	 * @return 현재 서버의 MAC 주소
+	 */
+	public static String getMacAddr() {
+		return macAddr;
+	}
+	static void setMacAddr(String macAddr) {
+		ServerConfig.macAddr = macAddr;
+		LogUtil.printLog("The server MAC address is [" + macAddr + "].");
 	}
 	
 	/*인코딩서버 전용설정********************************************/
