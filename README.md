@@ -19,7 +19,7 @@
 ```
 - OS : Microsoft Windows 10
 - Language : JRE 1.8
-- IDE : Eclipse Jee Photon
+- IDE : Eclipse Jee
 - Web Server : Tomcat 8.0
 ```
 ### 2. EncodingServer
@@ -28,8 +28,9 @@
 ```
 - OS : Microsoft Windows 10
 - Language : JRE 1.8
-- IDE : Eclipse Jee Photon
+- IDE : Eclipse Jee
 - Web Server : Tomcat 8.0
+- 반드시 8080 포트에서 실행시킬 것
 ```
 ### 3. LearningServer
 인코딩 연산 결과물을 분류 및 학습하는 서버
