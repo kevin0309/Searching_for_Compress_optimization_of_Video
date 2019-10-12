@@ -21,7 +21,6 @@ public class HTTPUtil {
 	 */
 	public static void sendHttpRequest(String url, String method, String paramStr) throws IOException {
 		URL urlObj = new URL(url);
-		
 		byte[] postDataBytes = paramStr.getBytes("UTF-8");
 
 		HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
@@ -32,10 +31,12 @@ public class HTTPUtil {
 	    conn.setRequestProperty("Accept-Charset", "UTF-8");
 	    conn.setRequestProperty("charset", "UTF-8");
 	    conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-	    conn.setRequestProperty("Content-Length", Integer.toString(postDataBytes.length));
 	    conn.setUseCaches(false);
-	    try( DataOutputStream wr = new DataOutputStream( conn.getOutputStream())) {
-    	   wr.write(postDataBytes);
+	    if (!paramStr.isEmpty() && paramStr != null) {
+		    conn.setRequestProperty("Content-Length", Integer.toString(postDataBytes.length));
+		    try( DataOutputStream wr = new DataOutputStream(conn.getOutputStream())) {
+	    	   wr.write(postDataBytes);
+		    }
 	    }
 		conn.getOutputStream().flush();
 		conn.getOutputStream().close();

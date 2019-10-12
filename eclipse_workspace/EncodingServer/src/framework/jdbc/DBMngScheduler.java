@@ -7,6 +7,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import framework.init.InitConfig;
 import framework.util.LogUtil;
 
 /**
@@ -24,6 +25,7 @@ public class DBMngScheduler implements ServletContextListener {
 		int schedulerThreadsAmount = 1;
 		scheduler = Executors.newScheduledThreadPool(schedulerThreadsAmount);
 		LogUtil.printLog("DBMng initiated successfully, DBMng holds "+schedulerThreadsAmount+" amounts of Threads.");
+		InitConfig.initConfigWithDBAcessRequired();
 	}
 	
 	public static ScheduledExecutorService getScheduler() {
@@ -32,6 +34,7 @@ public class DBMngScheduler implements ServletContextListener {
 	
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
+		InitConfig.destroyConfigWithDBAcessRequired();
 		scheduler.shutdownNow();
 	}
 }
