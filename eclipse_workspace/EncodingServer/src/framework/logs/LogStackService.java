@@ -60,6 +60,10 @@ public class LogStackService implements ServletContextListener {
 		logStack.add((isErrorLog?"[ERR]":"[LOG]")+log);
 	}
 	
+	/**
+	 * 누적된 로그를 저장, DB에 등록하고 초기화
+	 * @param isTerminate
+	 */
 	private void saveLog(boolean isTerminate) {
 		Date curDate = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm");

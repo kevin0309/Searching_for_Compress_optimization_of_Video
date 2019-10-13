@@ -54,12 +54,10 @@ public class LogUtil {
 	 */
 	private static String makeLogStr(String ip, String content, boolean isErr) {
 		StackTraceElement[] trace = new Throwable().getStackTrace();
-		
 		if(ip == null)
 			ip = "";
 		else
 			ip = "[" + ip + "]";
-		
 		String[] temp = trace[2].getClassName().split("\\.");
 		String className = "[" + temp[temp.length-1] + "]";
 		String res = "["+DateUtil.getSysdateStr()+"]" + className + ip + " - " + content;

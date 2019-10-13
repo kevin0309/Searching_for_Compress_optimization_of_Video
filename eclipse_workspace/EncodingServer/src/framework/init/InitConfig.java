@@ -13,7 +13,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import framework.init.initDAO.StorageServer;
+import framework.init.initDAO.StorageServerVO;
 import framework.init.initDAO.StorageServerDAO;
 import framework.util.ByteUtil;
 import framework.util.FileUtil;
@@ -58,25 +58,27 @@ public class InitConfig implements ServletContextListener {
 		ServerConfig.setProjectVersion(defProp.getProperty("projectVersion"));
 		ServerConfig.setLogStackDirectory(initProp.getProperty("logStackDirectory"));
 		ServerConfig.setLogStackInterval(PropertiesReader.getIntProperty(defProp, "logStackInterval", 0));
-		ServerConfig.setIsDev(!initProp.getProperty("devmode").equals("true"));
+		ServerConfig.setIsDev(initProp.getProperty("devmode").equals("true"));
 		setNetworkAddress();
 		
-		/*인코딩서버 전용설정********************************************/
-		ServerConfig.setFFMPEGPath(initProp.getProperty("FFMPEGPath")+"/ffmpeg.exe");
-		ServerConfig.setFFPROBEPath(initProp.getProperty("FFMPEGPath")+"/ffprobe.exe");
+		//사용가능한 디스크 스토리지 점검
 		String hddPathListSt = initProp.getProperty("fileStorageDirectoryPathList");
 		String[] hddPathList = hddPathListSt.split("\\|\\|");
-		ArrayList<ServerHDD> hddList = new ArrayList<>();
+		ArrayList<ServerHddVO> hddList = new ArrayList<>();
 		for (String tempPath : hddPathList) {
 			String name = tempPath.split("\\|")[0];
 			String path = tempPath.split("\\|")[1];
 			String tempDriveToken = path.substring(0,1);
 			String tempDirPath = path.substring(2, path.length());
-			ServerHDD tempHDD = new ServerHDD(name, tempDriveToken, tempDirPath);
+			ServerHddVO tempHDD = new ServerHddVO(name, tempDriveToken, tempDirPath);
 			hddList.add(tempHDD);
 		}
 		ServerConfig.setHDDList(hddList);
 		initFileStorage();
+		
+		/*인코딩서버 전용설정********************************************/
+		ServerConfig.setFFMPEGPath(initProp.getProperty("FFMPEGPath")+"/ffmpeg.exe");
+		ServerConfig.setFFPROBEPath(initProp.getProperty("FFMPEGPath")+"/ffprobe.exe");
 	}
 	
 	/**
@@ -114,7 +116,7 @@ public class InitConfig implements ServletContextListener {
 	 */
 	private static void setServerStatus() {
 		StorageServerDAO dao = new StorageServerDAO();
-		StorageServer server = dao.findExistedServerByMacAddr(ServerConfig.getMacAddr());
+		StorageServerVO server = dao.findExistedServerByMacAddr(ServerConfig.getMacAddr());
 		//등록된 mac 주소가 없을경우
 		if (server == null) {
 			LogUtil.printLog("The server profile not found at DB. Make new profile with this server.");
@@ -139,7 +141,7 @@ public class InitConfig implements ServletContextListener {
 	 */
 	private static int getServerId() {
 		StorageServerDAO dao = new StorageServerDAO();
-		StorageServer server = dao.findExistedServerByMacAddr(ServerConfig.getMacAddr());
+		StorageServerVO server = dao.findExistedServerByMacAddr(ServerConfig.getMacAddr());
 		return server.getSeq();
 	}
 	
@@ -179,7 +181,7 @@ public class InitConfig implements ServletContextListener {
 	 * 파일 저장 디렉토리 생성
 	 */
 	private void initFileStorage() {
-		for (ServerHDD hdd : ServerConfig.getHDDList()) {
+		for (ServerHddVO hdd : ServerConfig.getHDDList()) {
 			File directory = new File(hdd.getToken()+":"+hdd.getPath()+"/temp");
 			if (!directory.exists())
 				directory.mkdirs();

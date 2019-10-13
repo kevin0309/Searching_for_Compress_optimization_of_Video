@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -29,15 +30,12 @@ public class FileUtil {
 	public static void write(String filePath, String str) {
 		try {
 			File file = new File(filePath);
-			if (!file.exists()) {
+			if (!file.exists())
 				file.getParentFile().mkdirs();
-			}
 			FileWriter fw = new FileWriter(file);
 			BufferedWriter bw = new BufferedWriter(fw);
-			
 			bw.write(str);
 			bw.newLine();
-			
 			bw.close();
 		} catch (IOException e) {
 			LogUtil.printErrLog("write File error");
@@ -53,9 +51,8 @@ public class FileUtil {
 	public static void write(String filePath, ArrayList<String> strArr) {
 		try {
 			File file = new File(filePath);
-			if (!file.exists()) {
+			if (!file.exists())
 				file.getParentFile().mkdirs();
-			}
 			FileWriter fw = new FileWriter(file);
 			BufferedWriter bw = new BufferedWriter(fw);
 			
@@ -85,12 +82,10 @@ public class FileUtil {
 			
 			while (true) {
 				String str = br.readLine();
-				
 				if (str == null)
 					break;
-				else {
+				else
 					result.add(str);
-				}
 			}
 			
 			br.close();
@@ -161,6 +156,22 @@ public class FileUtil {
 	}
 	
 	/**
+	 * 파일에서 확장자를 제외한 파일명을 리턴
+	 * @param file
+	 * @return
+	 */
+	public static String getFileNameExceptExt(File file) {
+		String fileName;
+		try {
+			fileName = file.getName().substring(0, file.getName().lastIndexOf("."));
+		} catch (StringIndexOutOfBoundsException e) {
+			//확장자가 없는파일 처리
+			fileName = file.getName();
+		}
+		return fileName;
+	}
+	
+	/**
 	 * 해당 경로에 폴더가 없을경우 폴더 생성
 	 * @param newDirectoryPath
 	 */
@@ -207,5 +218,24 @@ public class FileUtil {
 		det.handleData(fileBytes, 0, fileBytes.length);
 		det.dataEnd();
 		return det.getDetectedCharset();
+	}
+	
+	/**
+	 * 파일의 MIME type을 판별하여 리턴
+	 * 확인 불가능한 경우 "unknown" 리턴
+	 * @param file
+	 * @return
+	 */
+	public static String getMIMEType(File file) {
+		String mimeType;
+		try {
+			mimeType = Files.probeContentType(file.toPath());
+		} catch (IOException e) {
+			mimeType = URLConnection.guessContentTypeFromName(file.getName());
+		}
+		if (mimeType == null)
+			mimeType = "unknown";
+		
+		return mimeType;
 	}
 }

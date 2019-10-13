@@ -3,7 +3,7 @@ package framework.servlet.controller.handler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import framework.servlet.controller.vo.PageMapper;
+import framework.servlet.controller.vo.PageMapperVO;
 
 /**
  * 사용자의 페이지요청 작업을 처리하는 핸들러
@@ -21,12 +21,12 @@ public interface RedirectPageHandler {
 	 * @param resp
 	 * @return
 	 */
-	public PageMapper doGet(HttpServletRequest req, HttpServletResponse resp) throws Exception;
+	public PageMapperVO doGet(HttpServletRequest req, HttpServletResponse resp) throws Exception;
 	/**
 	 * POST방식 페이지 요청에 대해 필요한 작업을 수행하는 메서드
 	 * @param req
 	 * @param resp
 	 * @return
 	 */
-	public PageMapper doPost(HttpServletRequest req, HttpServletResponse resp) throws Exception;
+	public PageMapperVO doPost(HttpServletRequest req, HttpServletResponse resp) throws Exception;
 }
