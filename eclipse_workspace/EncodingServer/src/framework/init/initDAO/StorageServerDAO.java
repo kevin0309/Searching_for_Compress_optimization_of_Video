@@ -27,8 +27,7 @@ public class StorageServerDAO {
 			else
 				return null;
 		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException(e);
 		} finally {
 			db.close();
 		}
@@ -47,7 +46,7 @@ public class StorageServerDAO {
 			db.setDate(regdate);
 			db.execute();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} finally {
 			db.close();
 		}
@@ -66,7 +65,7 @@ public class StorageServerDAO {
 			db.setString(macAddr);
 			db.execute();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} finally {
 			db.close();
 		}

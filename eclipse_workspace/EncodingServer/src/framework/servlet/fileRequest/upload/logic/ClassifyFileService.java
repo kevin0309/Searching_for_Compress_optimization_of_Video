@@ -12,9 +12,15 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import framework.init.ServerConfig;
 import framework.init.ServerHDD;
-import framework.servlet.fileRequest.upload.logic.PB.GetVideoResolutionOptions;
+import framework.servlet.fileRequest.FileDAO;
+import framework.servlet.fileRequest.upload.logic.PB.GetVideoMetadataOptions;
 import framework.util.FileUtil;
 import framework.util.LogUtil;
 import framework.util.windowsAppProcessing.WindowsAppProcessBuilder;
@@ -92,8 +98,9 @@ public class ClassifyFileService {
 	 * @return UploadFileRequestVO
 	 * @throws IOException
 	 * @throws SQLException 
+	 * @throws ParseException 
 	 */
-	public UploadSampleVideoRequestVO process() throws IOException, SQLException {
+	public UploadSampleVideoRequestVO process() throws IOException, SQLException, ParseException {
 		//temp에 저장되어있는 파일을 옮김
 		FileUtil.moveFile(tempFile, newPath);
 				
@@ -114,25 +121,44 @@ public class ClassifyFileService {
 	 * 
 	 * @param tempFile
 	 * @throws SQLException 
+	 * @throws ParseException 
 	 * @throws AddToEncodingQueueException 
 	 */
-	public void processVideo() throws SQLException {
-		//비디오 해상도 확인
-		WindowsAppProcessOptions getVideoResolutionOptions = 
-			new GetVideoResolutionOptions(ServerConfig.getFFPROBEPath(), newPath);
+	public void processVideo() throws SQLException, ParseException {
+		//비디오 해상도, 코덱 확인
+		WindowsAppProcessOptions getVideoMetadataOptions = 
+			new GetVideoMetadataOptions(ServerConfig.getFFPROBEPath(), newPath);
 		WindowsAppProcessBuilder wapb = new WindowsAppProcessBuilder(true);
-		wapb.process(getVideoResolutionOptions.generateCmdLine());
-		String wapbRes = wapb.getProcessLogs().get(0);
-		try {
-			if (wapbRes != null && !wapbRes.isEmpty()) {
-				uploadReqVO.setWidth(Integer.parseInt(wapb.getProcessLogs().get(0).split(",")[0]));
-				uploadReqVO.setHeight(Integer.parseInt(wapb.getProcessLogs().get(0).split(",")[1]));
-			}
-		} catch (ArrayIndexOutOfBoundsException e) {
-			LogUtil.printErrLog("FFPROBE error! : " + wapb.getProcessLogs().get(0));
+		wapb.process(getVideoMetadataOptions.generateCmdLine());
+		String wapbRes = "";
+		for (String out : wapb.getProcessLogs())
+			wapbRes += out;
+		JSONParser parser = new JSONParser();
+		JSONObject metaData = (JSONObject) parser.parse(wapbRes);
+		JSONArray streams = (JSONArray) metaData.get("streams");
+		JSONObject videoMetaData = null, audioMetaData = null;
+		for (Object stream : streams) {
+			JSONObject tempStream = (JSONObject) stream;
+			if (tempStream.get("codec_type").equals("video") && videoMetaData == null)
+				videoMetaData = tempStream;
+			if (tempStream.get("codec_type").equals("audio") && audioMetaData == null)
+				audioMetaData = tempStream;
 		}
+		long videoWidth = (Long)videoMetaData.get("width");
+		long videoHeight = (Long)videoMetaData.get("height");
+		String videoCodec = (String)videoMetaData.get("codec_name");
+		String audioCodec = (String)audioMetaData.get("codec_name");
+		if (videoCodec == null)
+			videoCodec = "unknown";
+		if (audioCodec == null)
+			audioCodec = "unknown";
 		
-		////sample_video 테이블에 레코드 추가
+		uploadReqVO.setWidth((int)videoWidth);
+		uploadReqVO.setHeight((int)videoHeight);
+		uploadReqVO.setvCodec(videoCodec);
+		uploadReqVO.setaCodec(audioCodec);
+		
+		new FileDAO().insertNewSampleVideo(uploadReqVO);
 	}
 	
 	/**
