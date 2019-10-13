@@ -1,4 +1,4 @@
-package framework.servlet.fileRequest.upload.logic;
+package framework.servlet.fileRequest;
 
 /**
  * 서버에 사용가능한 HDD가 없을 때 예외사항
