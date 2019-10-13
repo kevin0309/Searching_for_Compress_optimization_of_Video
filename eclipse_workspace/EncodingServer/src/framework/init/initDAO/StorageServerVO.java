@@ -3,12 +3,12 @@ package framework.init.initDAO;
 import java.util.Date;
 
 /**
- * DB의 storage_server테이블 대응 VO
+ * DB의 storage_server 테이블 대응 VO
  * @author 박유현
  * @since 2019.10.12
  *
  */
-public class StorageServer {
+public class StorageServerVO {
 
 	private int seq;
 	private String desc;
@@ -16,7 +16,7 @@ public class StorageServer {
 	private String macAddress;
 	private int status;
 	private Date regdate;
-	public StorageServer(int seq, String desc, String address, String macAddress, int status, Date regdate) {
+	public StorageServerVO(int seq, String desc, String address, String macAddress, int status, Date regdate) {
 		super();
 		this.seq = seq;
 		this.desc = desc;

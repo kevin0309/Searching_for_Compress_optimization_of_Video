@@ -17,7 +17,7 @@ import framework.init.ServerConfig;
 import framework.servlet.controller.exceptions.DuplicateURLException;
 import framework.servlet.controller.exceptions.WrongURLException;
 import framework.servlet.controller.handler.RedirectPageHandler;
-import framework.servlet.controller.vo.PageMapper;
+import framework.servlet.controller.vo.PageMapperVO;
 import framework.util.ClassFounder;
 import framework.util.LogUtil;
 
@@ -78,7 +78,6 @@ public class RedirectPageController extends HttpServlet{
 	 * @throws IOException
 	 */
 	private void process(HttpServletRequest req, HttpServletResponse resp, boolean isGet) throws ServletException, IOException {
-		//컨트롤러에 목적에 맞게 페이지 이동에 대한 내용을 담을 것
 		String command = req.getRequestURI();
 		if (command.indexOf(req.getContextPath()) == 0)
 			command = command.substring(req.getContextPath().length());
@@ -91,7 +90,7 @@ public class RedirectPageController extends HttpServlet{
 			return;
 		}
 		else {
-			PageMapper mapper = null;
+			PageMapperVO mapper = null;
 			
 			try {
 				if(isGet) 

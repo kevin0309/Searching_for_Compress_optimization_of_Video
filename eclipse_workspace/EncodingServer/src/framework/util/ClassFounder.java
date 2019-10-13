@@ -25,6 +25,7 @@ public class ClassFounder {
 			//.list() : directroy 디렉토리 내에 있는 파일과 디렉토리 이름을 문자열 배열로 반환한다.
 			for (final String file : files) {
 				if (file.endsWith(".class")) {
+					//파일로 존재하지 않는 내부 클래스를 제외
 					if (file.indexOf("$") > -1)
 						continue;
 					

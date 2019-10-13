@@ -1,11 +1,9 @@
-package framework.servlet.fileRequest.upload.logic;
+package framework.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import framework.init.ServerHDD;
-import framework.util.FileUtil;
-import framework.util.RandomStringGenerator;
+import framework.init.ServerHddVO;
 
 /**
  * 업로드된 파일이 저장될 경로를 만드는 클래스
@@ -16,14 +14,14 @@ import framework.util.RandomStringGenerator;
 public class GenerateFilePathFactory {
 
 	private Date date;
-	private ServerHDD currentHdd;
+	private ServerHddVO currentHdd;
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
 	private SimpleDateFormat sdf2 = new SimpleDateFormat("MM");
 	private String curYear;
 	private String curMonth;
 	private String id;
 	
-	public GenerateFilePathFactory(Date date, ServerHDD currentHdd) {
+	public GenerateFilePathFactory(Date date, ServerHddVO currentHdd) {
 		this.date = date;
 		this.currentHdd = currentHdd;
 		curYear = sdf.format(date);

@@ -33,25 +33,26 @@ import java.util.concurrent.TimeUnit;
  * 
  * (SQLException을 핸들링해야함)
  * @since 2017-02-01
- * @version 1.0 2017-02-01 초본완성
- * @version 1.1 2017-02-10 1. autoClose기능 오류 수정																										<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ * @version 1.0  2017-02-01 초본완성
+ * @version 1.1  2017-02-10 1. autoClose기능 오류 수정																										<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  * 						   2. 전체적인 메소드들의 코딩방식 획일화																									<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  * 						   3. exception 핸들링 이상한 부분 수정																								<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  * 						   4. 에러메세지 출력기능 추가																											<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  * 						   5. 진행상 논리오류 수정																											<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  * 						   6. 주석추가
- * @version 1.2 2017-02-17 특정 Java 버전에서 PreparedStatement와 ResultSet의 isClosed()가 오류나는 문제 발생하여 수정
- * @version 1.3 2017-03-22 객체 선언 후 autoCommit설정을 할 수 있는 메소드, rollback하는 메소드 추가
- * @version 1.4 2017-08-08 1. 새로 옮겨적는 과정에서 불필요한부분 일부 삭제																							<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ * @version 1.2  2017-02-17 특정 Java 버전에서 PreparedStatement와 ResultSet의 isClosed()가 오류나는 문제 발생하여 수정
+ * @version 1.3  2017-03-22 객체 선언 후 autoCommit설정을 할 수 있는 메소드, rollback하는 메소드 추가
+ * @version 1.4  2017-08-08 1. 새로 옮겨적는 과정에서 불필요한부분 일부 삭제																							<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  * 						   2. close()메소드에서 ResultSet이 null일경우 에러 수정
- * @version 1.5 2017-08-09 MySQL에서 사용 가능하게 excute()메소드 수정(MySQL에서는 excuteQuery()메소드가 불안정함)
- * @version 1.6 2017-08-10 1. set~~() 메소드를 인덱스 없이 사용할 수 있는 메소드들 추가																				<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ * @version 1.5  2017-08-09 MySQL에서 사용 가능하게 excute()메소드 수정(MySQL에서는 excuteQuery()메소드가 불안정함)
+ * @version 1.6  2017-08-10 1. set~~() 메소드를 인덱스 없이 사용할 수 있는 메소드들 추가																				<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  *						   2. autoClose의 시간을 조절할 수 있는 기능 추가 setAutoCloseTimeout() 메소드 사용
- * @version 1.7 2018-07-16 resultSet의 메타데이터 조회를 위한  메서드 추가
- * @version 1.8 2018-12-25 1. status들을 DBMngStatus라는 별도의 클래스로 분리
- * 						   2. 전체적인 오타수정 및 코드간략화, 주석작업
+ * @version 1.7  2018-07-16 resultSet의 메타데이터 조회를 위한  메서드 추가
+ * @version 1.8  2018-12-25 1. status들을 DBMngStatus라는 별도의 클래스로 분리																					<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ * 						   2. 전체적인 오타수정 및 코드간략화, 주석작업																								<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
  * 						   3. setAutoCloseTimeout() 기능 삭제, 안쓰이는 몇몇 메서드도 삭제
- * @version 1.9 2018-12-29 DBMng autoclose 기능을 스케줄러에서 관리하도록 DBMngScheduler로 분리
+ * @version 1.9  2018-12-29 DBMng autoclose 기능을 스케줄러에서 관리하도록 DBMngScheduler로 분리
+ * @version 1.10 2019-10-13 convertTimestampToDate 파라미터가 null일 경우 오류 수정
  * @author 박유현
  * @example 
  * -----Example ({}안은 사용자 입력)-----<br><br>
@@ -970,6 +971,9 @@ public class DBMng {
 	}
 	
 	private Date convertTimestampToDate(Timestamp timestamp) {
-		return new Date(timestamp.getTime());
+		if (timestamp == null)
+			return null;
+		else
+			return new Date(timestamp.getTime());
 	}
 }

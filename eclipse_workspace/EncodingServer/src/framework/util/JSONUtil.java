@@ -90,7 +90,6 @@ public class JSONUtil {
 		try {
 			JSONObject res = new JSONObject();
 			res.putAll(convertObjectToMap(obj));
-			
 			return res;
 		} catch (Exception e) {
 			LogUtil.printErrLog("unexpected error");
@@ -107,11 +106,8 @@ public class JSONUtil {
 	@SuppressWarnings("unchecked")
 	public static JSONArray convertArrayListToJSONArray(ArrayList<Object> arr) {
 		JSONArray result = new JSONArray();
-		
-		for (Object obj : arr) {
+		for (Object obj : arr)
 			result.add(convertObjectToJSONObject(obj));
-		}
-		
 		return result;
 	}
 	
@@ -122,12 +118,10 @@ public class JSONUtil {
 	 */
 	public static String toString_arr(JSONArray arr) {
 		String result = null;
-		
 		if (arr == null || arr.size() == 0)
 			result = "[]";
 		else
 			result = arr.toJSONString();
-		
 		return result;
 	}
 	
@@ -138,12 +132,10 @@ public class JSONUtil {
 	 */
 	public static String toString_obj(JSONObject obj) {
 		String result = null;
-		
 		if (obj == null)
 			result = "{}";
 		else
 			result = obj.toJSONString();
-		
 		return result;
 	}
 }

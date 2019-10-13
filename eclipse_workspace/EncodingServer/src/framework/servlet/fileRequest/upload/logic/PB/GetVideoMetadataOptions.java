@@ -2,19 +2,16 @@ package framework.servlet.fileRequest.upload.logic.PB;
 
 import java.util.ArrayList;
 
-import org.json.simple.JSONArray;
-
 import framework.util.windowsAppProcessing.WindowsAppProcessOptions;
 
 /**
- * FFPROBE 사용하여 비디오 width, height 구하는 프로세스
+ * FFPROBE 사용하여 영상파일에서 필요한 엔트리를 구하는 프로세스
  * @author 박유현
  * @since 2019.10.13
  */
 public class GetVideoMetadataOptions implements WindowsAppProcessOptions {
 
 	private ArrayList<String> tempArr;
-	
 	
 	public GetVideoMetadataOptions(String ffprobePath, String videoFilePath) {
 		tempArr = new ArrayList<>();
@@ -36,15 +33,6 @@ public class GetVideoMetadataOptions implements WindowsAppProcessOptions {
 		String[] result = new String[tempArr.size()];
 		for (int i = 0; i < tempArr.size(); i++)
 			result[i] = tempArr.get(i);
-		return result;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public JSONArray generateJSONCmdLine() {
-		JSONArray result = new JSONArray();
-		for (String opt : tempArr)
-			result.add(opt);
 		return result;
 	}
 

@@ -1,5 +1,6 @@
 package framework.servlet.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import framework.util.LogUtil;
 public class FileDownloadController extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	private static Map<String, FileDownloadHandler> handlerMap = new HashMap<>();
-	//서버가 켜질 때 핸드러를 상속받은 클래스를 메모리에 미리 등록해놓는 것. 이게 init. 이렇게 등록을 해둬야 사용자 요청이 들어왔을 때, HandlerMap변수에서 로직을 찾아서 연결해줄 수 있다.  
+	
 	/**
 	 * 서블릿 초기화에 필요한 기능을 수행하는 메서드
 	 */
@@ -90,7 +91,16 @@ public class FileDownloadController extends HttpServlet{
 		}
 		else {
 			try {
-				LogUtil.printLog(req.getRemoteAddr(), "downloaded file : "+handler.process(req, resp).getName());
+				File file = handler.process(req, resp);
+				//용량 지정
+				resp.addHeader("Content-Length", Long.toString(file.length()));
+
+				//resp.setHeader("Content-Transfer-Encoding", "binary;");
+				//resp.setHeader("Pragma", "no-cache;"); //http1.0
+				//resp.setDateHeader("Expires", 0);
+				//resp.setHeader ( "Cache-Control", "no-cache" ); //http1.1
+				
+				LogUtil.printLog(req.getRemoteAddr(), "downloaded file : " + file.getName());
 			} catch (ClientAbortException e) {
 				//do nothing
 			} catch (Exception e) {
@@ -98,6 +108,7 @@ public class FileDownloadController extends HttpServlet{
 			}
 		}						
 	}
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		process(req,resp);

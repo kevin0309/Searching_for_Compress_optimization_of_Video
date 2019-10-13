@@ -31,7 +31,7 @@ import framework.util.LogUtil;
 public class AjaxRequestController extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	private static Map<String, AjaxRequestHandler> handlerMap = new HashMap<>();
-	//서버가 켜질 때 핸들러를 상속받은 클래스를 메모리에 미리 등록해놓는 것. 이게 init. 이렇게 등록을 해둬야 사용자 요청이 들어왔을 때, HandlerMap변수에서 로직을 찾아서 연결해줄 수 있다.  
+	
 	/**
 	 * 서블릿 초기화에 필요한 기능을 수행하는 메서드
 	 */
@@ -106,7 +106,7 @@ public class AjaxRequestController extends HttpServlet{
 				obj.put("statusMsg", "Server Logic error occured. ("+e.getLocalizedMessage()+")");
 				logMsg += "Status : Server Logic error occured. ("+e.getMessage()+")";
 			}
-			resp.setContentType("application/json");	//MIME type 마임타입이라 한다. 컨텐츠타입에 담기는 건 마임타입이다. 마임타입을 보고 브라우져에서 뭘 할지를 정한다.
+			resp.setContentType("application/json");
 			resp.getWriter().println(JSONUtil.toString_obj(obj));
 			resp.getWriter().flush();	
 			resp.getWriter().close();

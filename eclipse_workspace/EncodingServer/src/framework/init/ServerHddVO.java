@@ -7,7 +7,7 @@ import java.io.File;
  * @author 박유현
  * @since 2019.09.30
  */
-public class ServerHDD {
+public class ServerHddVO {
 
 	private String name;
 	private String token;
@@ -22,7 +22,7 @@ public class ServerHDD {
 	 * @param token 하드디스크명 (ex: "C" or "D")
 	 * @param path 하드디스크 내 저장될 기본 디렉토리
 	 */
-	public ServerHDD(String name, String token, String path) {
+	public ServerHddVO(String name, String token, String path) {
 		super();
 		this.name = name;
 		this.token = token;

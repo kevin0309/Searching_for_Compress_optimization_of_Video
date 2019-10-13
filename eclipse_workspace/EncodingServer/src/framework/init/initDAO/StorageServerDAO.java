@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import framework.jdbc.DBMng;
+import framework.util.LogUtil;
 
 /**
  * DB의 storage_server 테이블 대응 DAO
@@ -12,7 +13,12 @@ import framework.jdbc.DBMng;
  */
 public class StorageServerDAO {
 
-	public StorageServer findExistedServerByMacAddr(String macAddr) {
+	/**
+	 * mac address로 storage_server 테이블 조회
+	 * @param macAddr
+	 * @return
+	 */
+	public StorageServerVO findExistedServerByMacAddr(String macAddr) {
 		DBMng db = null;
 		
 		try {
@@ -22,17 +28,26 @@ public class StorageServerDAO {
 			db.execute();
 			
 			if (db.next())
-				return new StorageServer(db.getInt(1), db.getString(2), db.getString(3), 
+				return new StorageServerVO(db.getInt(1), db.getString(2), db.getString(3), 
 						db.getString(4), db.getInt(5), db.getDate(6));
 			else
 				return null;
 		} catch (SQLException e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
 			throw new RuntimeException(e);
 		} finally {
 			db.close();
 		}
 	}
 	
+	/**
+	 * 새로운 서버 프로필 작성
+	 * @param desc
+	 * @param ipAddr
+	 * @param macAddr
+	 * @param status
+	 * @param regdate
+	 */
 	public void insertNewServer(String desc, String ipAddr, String macAddr, int status, Date regdate) {
 		DBMng db = null;
 		
@@ -46,12 +61,21 @@ public class StorageServerDAO {
 			db.setDate(regdate);
 			db.execute();
 		} catch (SQLException e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
 			throw new RuntimeException(e);
 		} finally {
 			db.close();
 		}
 	}
 	
+	/**
+	 * 기존 서버 프로필 정보 수정
+	 * @param desc
+	 * @param ipAddr
+	 * @param macAddr
+	 * @param status
+	 * @param regdate
+	 */
 	public void updateExistedServerByMacAddr(String desc, String ipAddr, String macAddr, int status, Date regdate) {
 		DBMng db = null;
 		
@@ -65,6 +89,7 @@ public class StorageServerDAO {
 			db.setString(macAddr);
 			db.execute();
 		} catch (SQLException e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
 			throw new RuntimeException(e);
 		} finally {
 			db.close();

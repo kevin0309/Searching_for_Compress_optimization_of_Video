@@ -23,11 +23,11 @@ public class ServerConfig {
 	private static String ipAddr;
 	private static int serverPortNum;
 	private static String macAddr;
+	private static ArrayList<ServerHddVO> HDDList;
 	
 	/*인코딩서버 전용설정********************************************/
 	private static String ffmpegPath;
 	private static String ffprobePath;
-	private static ArrayList<ServerHDD> HDDList;
 
 	/**
 	 * 서버 전역설정값
@@ -117,12 +117,14 @@ public class ServerConfig {
 	}
 	static void setIsDev(boolean isDev) {
 		ServerConfig.isDev = isDev;
-		System.out.println("***|  ***    *****  *    *       *     *   ****   ***    *****   |***");
-		System.out.println("***|  *   *  *      *    *       **   **  *    *  *   *  *       |***");
-		System.out.println("***|  *   *  *****  *    *       * * * *  *    *  *   *  *****   |***");
-		System.out.println("***|  *   *  *       *  *        * * * *  *    *  *   *  *       |***");
-		System.out.println("***|  ***    *****    **         *  *  *   ****   ***    *****   |***");
-		LogUtil.printLog("The server now runs in developer mode.");
+		if (isDev) {
+			System.out.println("***|  ***    *****  *    *       *     *   ****   ***    *****   |***");
+			System.out.println("***|  *   *  *      *    *       **   **  *    *  *   *  *       |***");
+			System.out.println("***|  *   *  *****  *    *       * * * *  *    *  *   *  *****   |***");
+			System.out.println("***|  *   *  *       *  *        * * * *  *    *  *   *  *       |***");
+			System.out.println("***|  ***    *****    **         *  *  *   ****   ***    *****   |***");
+			LogUtil.printLog("The server now runs in developer mode.");
+		}
 	}
 	/**
 	 * 서버 전역설정값
@@ -168,6 +170,16 @@ public class ServerConfig {
 		ServerConfig.macAddr = macAddr;
 		LogUtil.printLog("The server MAC address is [" + macAddr + "].");
 	}
+	/**
+	 * 서버 전역설정값
+	 * @return 인코딩에 사용될 하드디스크 리스트
+	 */
+	public static ArrayList<ServerHddVO> getHDDList() {
+		return HDDList;
+	}
+	static void setHDDList(ArrayList<ServerHddVO> HDDList) {
+		ServerConfig.HDDList = HDDList;
+	}
 	
 	/*인코딩서버 전용설정********************************************/
 	/**
@@ -191,16 +203,6 @@ public class ServerConfig {
 	static void setFFPROBEPath(String ffprobePath) {
 		ServerConfig.ffprobePath = ffprobePath;
 		LogUtil.printLog("FFPROBE path has been set to [" + ffprobePath + "].");
-	}
-	/**
-	 * 서버 전역설정값
-	 * @return 인코딩에 사용될 하드디스크 리스트
-	 */
-	public static ArrayList<ServerHDD> getHDDList() {
-		return HDDList;
-	}
-	static void setHDDList(ArrayList<ServerHDD> HDDList) {
-		ServerConfig.HDDList = HDDList;
 	}
 	
 }

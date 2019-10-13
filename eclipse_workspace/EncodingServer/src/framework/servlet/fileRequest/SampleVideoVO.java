@@ -1,4 +1,4 @@
-package framework.servlet.fileRequest.upload.logic;
+package framework.servlet.fileRequest;
 
 import java.util.Date;
 
@@ -7,7 +7,7 @@ import java.util.Date;
  * @author 박유현
  * @since 2019.10.13
  */
-public class UploadSampleVideoRequestVO {
+public class SampleVideoVO {
 
 	private String fileName;
 	private String fileExt;
@@ -24,7 +24,7 @@ public class UploadSampleVideoRequestVO {
 	
 	private String fileCategory;
 	
-	public UploadSampleVideoRequestVO(String fileName, String fileExt, String mimeType, long volume, String volumeStr,
+	public SampleVideoVO(String fileName, String fileExt, String mimeType, long volume, String volumeStr,
 			int storageServerId, String directory, Date regdate) {
 		super();
 		this.fileName = fileName;

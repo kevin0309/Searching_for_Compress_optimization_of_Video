@@ -5,8 +5,6 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLConnection;
-import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -18,10 +16,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import framework.init.ServerConfig;
-import framework.init.ServerHDD;
-import framework.servlet.fileRequest.FileDAO;
+import framework.init.ServerHddVO;
+import framework.servlet.fileRequest.SampleVideoDAO;
+import framework.servlet.fileRequest.SampleVideoVO;
 import framework.servlet.fileRequest.upload.logic.PB.GetVideoMetadataOptions;
 import framework.util.FileUtil;
+import framework.util.GenerateFilePathFactory;
 import framework.util.LogUtil;
 import framework.util.windowsAppProcessing.WindowsAppProcessBuilder;
 import framework.util.windowsAppProcessing.WindowsAppProcessOptions;
@@ -34,7 +34,7 @@ import framework.util.windowsAppProcessing.WindowsAppProcessOptions;
 public class ClassifyFileService {
 	
 	private File tempFile;
-	private UploadSampleVideoRequestVO uploadReqVO;
+	private SampleVideoVO uploadReqVO;
 	private GenerateFilePathFactory pathFactory;
 	private String newPath;
 	
@@ -45,27 +45,14 @@ public class ClassifyFileService {
 	 * @param fileMIMEType
 	 * @throws SQLException 
 	 */
-	public ClassifyFileService(File tempFile, ServerHDD curHdd) throws SQLException {
+	public ClassifyFileService(File tempFile, ServerHddVO curHdd) throws SQLException {
 		this.tempFile = tempFile;
-		String fileName;
-		try {
-			fileName = tempFile.getName().substring(0, tempFile.getName().lastIndexOf("."));
-		} catch (StringIndexOutOfBoundsException e) {
-			//확장자가 없는파일 처리
-			fileName = tempFile.getName();
-		}
+		String fileName = FileUtil.getFileNameExceptExt(tempFile);
 		
 		//파일 마임타입 지정
-		String mimeType;
-		try {
-			mimeType = Files.probeContentType(tempFile.toPath());
-		} catch (IOException e) {
-			mimeType = URLConnection.guessContentTypeFromName(tempFile.getName());
-		}
-		if (mimeType == null)
-			mimeType = "unknown";
+		String mimeType = FileUtil.getMIMEType(tempFile);
 		
-		uploadReqVO = new UploadSampleVideoRequestVO(fileName, FileUtil.getExt(tempFile), mimeType, 
+		uploadReqVO = new SampleVideoVO(fileName, FileUtil.getExt(tempFile), mimeType, 
 				tempFile.length(), FileUtil.generateVolumeStr(tempFile.length()), ServerConfig.getServerId(),
 				null, new Date());
 		
@@ -100,7 +87,7 @@ public class ClassifyFileService {
 	 * @throws SQLException 
 	 * @throws ParseException 
 	 */
-	public UploadSampleVideoRequestVO process() throws IOException, SQLException, ParseException {
+	public SampleVideoVO process() throws IOException, SQLException, ParseException {
 		//temp에 저장되어있는 파일을 옮김
 		FileUtil.moveFile(tempFile, newPath);
 				
@@ -158,7 +145,7 @@ public class ClassifyFileService {
 		uploadReqVO.setvCodec(videoCodec);
 		uploadReqVO.setaCodec(audioCodec);
 		
-		new FileDAO().insertNewSampleVideo(uploadReqVO);
+		new SampleVideoDAO().insertNewSampleVideo(uploadReqVO);
 	}
 	
 	/**

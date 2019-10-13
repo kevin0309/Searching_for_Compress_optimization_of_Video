@@ -3,7 +3,7 @@ package framework.servlet.fileRequest;
 import java.util.ArrayList;
 
 import framework.init.ServerConfig;
-import framework.init.ServerHDD;
+import framework.init.ServerHddVO;
 import framework.util.LogUtil;
 
 /**
@@ -15,7 +15,7 @@ import framework.util.LogUtil;
 public class HddSelector {
 	
 	private static ArrayList<Integer> hddCntList;
-	private ServerHDD currentUse;
+	private ServerHddVO currentUse;
 	private int currentUseIndex;
 	private HddSelector() {
 		hddCntList = new ArrayList<>();
@@ -42,10 +42,10 @@ public class HddSelector {
 	 * @param requestVolume 작업에 필요한 용량
 	 * @return ServerHDD
 	 * @throws NotEnoughSpaceForHddException 서버에 사용가능한 HDD가 없을 때 예외사항
-	 * @see framework.init.ServerHDD
+	 * @see framework.init.ServerHddVO
 	 */
-	public ServerHDD getHDD(long requestVolume) throws NotEnoughSpaceForHddException {
-		ArrayList<ServerHDD> hddArr = ServerConfig.getHDDList();
+	public ServerHddVO getHDD(long requestVolume) throws NotEnoughSpaceForHddException {
+		ArrayList<ServerHddVO> hddArr = ServerConfig.getHDDList();
 		
 		for (int i = 0; i < hddArr.size(); i++)
 			if (!hddArr.get(i).isCurrentUse())
@@ -79,7 +79,7 @@ public class HddSelector {
 		throw new NotEnoughSpaceForHddException();
 	}
 	
-	private void selectHdd(ServerHDD hdd, int i, long requestVolume) {
+	private void selectHdd(ServerHddVO hdd, int i, long requestVolume) {
 		currentUse = hdd;
 		currentUseIndex = i;
 		currentUse.setCurrentUse(true);

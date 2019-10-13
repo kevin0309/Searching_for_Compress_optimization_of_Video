@@ -55,7 +55,7 @@ public class WindowsAppProcessBuilder {
 		
 		// 정상 종료가 되지 않았을 경우
 		if (p.exitValue() != 0) {
-			LogUtil.printLog("프로세스 진행 중 에러 발생");
+			LogUtil.printLog("프로세스가 정상종료되지 않음.");
 			return false;
 		 }
 		p.destroy();
@@ -89,6 +89,10 @@ public class WindowsAppProcessBuilder {
 		}
 	}
 
+	/**
+	 * 출력결과를 담고있는 ArrayList 리턴
+	 * @return
+	 */
 	public ArrayList<String> getProcessLogs() {
 		return processLogs;
 	}
