@@ -1,11 +1,16 @@
 package framework.util;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.simple.JSONArray;
+import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -137,5 +142,24 @@ public class JSONUtil {
 		else
 			result = obj.toJSONString();
 		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void setJSONResponse(JSONAware data, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		JSONObject obj = new JSONObject();
+		obj.put("responseDate", DateUtil.getSysdateStr());
+		
+		try {
+			obj.put("resultData", data);
+			obj.put("statusMsg", "OK");
+		} catch (Exception e) {
+			e.printStackTrace();
+			obj.put("resultData", "");
+			obj.put("statusMsg", "Server Logic error occured. ("+e.getLocalizedMessage()+")");
+		}
+		resp.setContentType("application/json");
+		resp.getWriter().println(JSONUtil.toString_obj(obj));
+		resp.getWriter().flush();	
+		resp.getWriter().close();
 	}
 }
