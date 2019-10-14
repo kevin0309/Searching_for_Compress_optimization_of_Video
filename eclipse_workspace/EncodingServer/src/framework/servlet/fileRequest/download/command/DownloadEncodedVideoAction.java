@@ -11,9 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.ClientAbortException;
+import org.json.simple.JSONObject;
 
+import framework.init.ServerConfig;
 import framework.servlet.controller.handler.FileDownloadHandler;
 import framework.util.FileUtil;
+import framework.util.JSONUtil;
 import framework.util.LogUtil;
 import works.EncodingQueueDAO;
 import works.EncodingQueueVO;
@@ -33,22 +36,43 @@ public class DownloadEncodedVideoAction implements FileDownloadHandler {
 		return "/download/encoded";
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public File process(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		int encodingQueueId;
 		try {
 			encodingQueueId = Integer.parseInt(req.getParameter("id"));
 		} catch (Exception e) {
+			JSONObject resMsg = new JSONObject();
+			resMsg.put("error detail", "id must be a integer value.");
+			JSONUtil.setJSONResponse(resMsg, req, resp);
 			throw new NumberFormatException();
 		}
 		
 		EncodingQueueVO encodedVideo = dao.getEncodingWorkBySeq(encodingQueueId);
+		if (encodedVideo == null) {
+			JSONObject resMsg = new JSONObject();
+			resMsg.put("error detail", "The file does not exist. Check id value.");
+			JSONUtil.setJSONResponse(resMsg, req, resp);
+			throw new FileNotFoundException("id not found");
+		}
+		if (encodedVideo.getAssignedServerId() != ServerConfig.getServerId()) {
+			JSONObject resMsg = new JSONObject();
+			resMsg.put("error detail", "The file does not exist. That file stored on another server.");
+			JSONUtil.setJSONResponse(resMsg, req, resp);
+			throw new FileNotFoundException("different server id");
+		}
+		
 		File file = new File(encodedVideo.getNewDirectory());
 		String[] temp = encodedVideo.getNewDirectory().split("/");
 		String fileName = temp[temp.length-1];
 		
-		if (!file.exists())
+		if (!file.exists()) {
+			JSONObject resMsg = new JSONObject();
+			resMsg.put("error detail", "The file does not exist. It may have been deleted or moved.");
+			JSONUtil.setJSONResponse(resMsg, req, resp);
 			throw new FileNotFoundException("no such file detected.");
+		}
 		
 		//마임타임 지정
 		String mimeType = FileUtil.getMIMEType(file);

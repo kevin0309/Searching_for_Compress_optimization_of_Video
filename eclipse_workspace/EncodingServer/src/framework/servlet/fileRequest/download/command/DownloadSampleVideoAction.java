@@ -11,10 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.ClientAbortException;
+import org.json.simple.JSONObject;
 
+import framework.init.ServerConfig;
 import framework.servlet.controller.handler.FileDownloadHandler;
 import framework.servlet.fileRequest.SampleVideoDAO;
 import framework.servlet.fileRequest.SampleVideoVO;
+import framework.util.JSONUtil;
 import framework.util.LogUtil;
 
 /**
@@ -32,21 +35,42 @@ public class DownloadSampleVideoAction implements FileDownloadHandler {
 		return "/download/original";
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public File process(HttpServletRequest req, HttpServletResponse resp) throws Exception {
 		int fileId;
 		try {
 			fileId = Integer.parseInt(req.getParameter("id"));
 		} catch (Exception e) {
+			JSONObject resMsg = new JSONObject();
+			resMsg.put("error detail", "id must be a integer value.");
+			JSONUtil.setJSONResponse(resMsg, req, resp);
 			throw new NumberFormatException();
 		}
 		
 		SampleVideoVO sampleVideo = dao.selectSampleVideoById(fileId);
+		if (sampleVideo == null) {
+			JSONObject resMsg = new JSONObject();
+			resMsg.put("error detail", "The file does not exist. Check id value.");
+			JSONUtil.setJSONResponse(resMsg, req, resp);
+			throw new FileNotFoundException("id not found");
+		}
+		if (sampleVideo.getStorageServerId() != ServerConfig.getServerId()) {
+			JSONObject resMsg = new JSONObject();
+			resMsg.put("error detail", "The file does not exist. That file stored on another server.");
+			JSONUtil.setJSONResponse(resMsg, req, resp);
+			throw new FileNotFoundException("different server id");
+		}
+		
 		File file = new File(sampleVideo.getDirectory());
 		String fileName = sampleVideo.getFileName()+"."+sampleVideo.getFileExt();
 		
-		if (!file.exists())
+		if (!file.exists()) {
+			JSONObject resMsg = new JSONObject();
+			resMsg.put("error detail", "The file does not exist. It may have been deleted or moved.");
+			JSONUtil.setJSONResponse(resMsg, req, resp);
 			throw new FileNotFoundException("no such file detected.");
+		}
 		
 		//마임타임 지정
 		if (sampleVideo.getMimeType().equals("unknown"))
