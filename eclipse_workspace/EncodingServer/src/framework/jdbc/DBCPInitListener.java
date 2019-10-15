@@ -65,7 +65,6 @@ public class DBCPInitListener implements ServletContextListener{
 	 * 설정값으로 DBCP를 구현하는 메서드
 	 * @param prop
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void initConnectionPool(Properties prop) {
 		try {
 			String serverAddr = prop.getProperty("DBServerAddress");

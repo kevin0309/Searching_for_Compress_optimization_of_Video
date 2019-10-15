@@ -117,6 +117,51 @@ public class EncodingQueueDAO {
 		}
 	}
 	
+	public ArrayList<EncodingQueueVO> getEncodingQueueList(int offset, int amount) {
+		DBMng db = null;
+		ArrayList<EncodingQueueVO> res = new ArrayList<>();
+		
+		try {
+			db = new DBMng();
+			db.setQuery("select * from encoding_queue limit ?, ?");
+			db.setInt(offset);
+			db.setInt(amount);
+			db.execute();
+			
+			while (db.next()) {
+				res.add(new EncodingQueueVO(db.getInt(1), db.getInt(2), db.getString(3), 
+						db.getString(4), db.getLong(5), db.getDate(6), db.getDate(7), 
+						db.getInt(8), db.getString(9), db.getDate(10)));
+			}
+			return res;
+		} catch (Exception e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
+	
+	public int getTotalRowCnt() {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("select count(1) cnt from encoding_queue");
+			db.execute();
+			
+			if (db.next())
+				return db.getInt("cnt");
+			else
+				return -1;
+		} catch (Exception e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
+	
 	/**
 	 * encoding_queue.preset_code로 프리셋 옵션 리스트 조회
 	 * @param encodingPreset
