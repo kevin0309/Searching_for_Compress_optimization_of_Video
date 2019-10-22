@@ -27,7 +27,10 @@ public class DateUtil {
 	 * @return dateformat String
 	 */
 	public static String toString(Date date) {
-		return sdf.format(date);
+		if (date != null)
+			return sdf.format(date);
+		else
+			return "null";
 	}
 	
 	/**
