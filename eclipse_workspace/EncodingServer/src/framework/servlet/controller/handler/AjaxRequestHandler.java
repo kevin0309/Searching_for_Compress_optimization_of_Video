@@ -12,6 +12,7 @@ import org.json.simple.JSONAware;
  */
 public interface AjaxRequestHandler {
 	/**
+	 * process ~
 	 * @return 생성되는 URL 주소(사용자가 입력할 URL 주소)
 	 */
 	public String getURL();

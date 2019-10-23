@@ -18,12 +18,13 @@ public class EncodingQueueDAO {
 	 * 대기중인 다음 인코딩 작업 조회
 	 * @return
 	 */
-	public EncodingQueueVO getNextEncodingWork() {
+	public EncodingQueueVO getNextEncodingWork(int curServerId) {
 		DBMng db = null;
 		
 		try {
 			db = new DBMng();
-			db.setQuery("select * from encoding_queue where assigned_server_id is null and status = 'waiting' order by regdate limit 1");
+			db.setQuery("select * from encoding_queue eq where assigned_server_id is null and status = 'waiting' and file_id = (select seq from sample_video where seq = eq.file_id and sample_video.storage_server_id = ?) limit 1");
+			db.setInt(curServerId);
 			db.execute();
 			if (db.next()) {
 				return new EncodingQueueVO(db.getInt(1), db.getInt(2), db.getString(3), 
@@ -110,6 +111,51 @@ public class EncodingQueueDAO {
 			db.setInt(seq);
 			db.execute();
 		} catch (SQLException e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
+	
+	public ArrayList<EncodingQueueVO> getEncodingQueueList(int offset, int amount) {
+		DBMng db = null;
+		ArrayList<EncodingQueueVO> res = new ArrayList<>();
+		
+		try {
+			db = new DBMng();
+			db.setQuery("select * from encoding_queue limit ?, ?");
+			db.setInt(offset);
+			db.setInt(amount);
+			db.execute();
+			
+			while (db.next()) {
+				res.add(new EncodingQueueVO(db.getInt(1), db.getInt(2), db.getString(3), 
+						db.getString(4), db.getLong(5), db.getDate(6), db.getDate(7), 
+						db.getInt(8), db.getString(9), db.getDate(10)));
+			}
+			return res;
+		} catch (Exception e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
+	
+	public int getTotalRowCnt() {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("select count(1) cnt from encoding_queue");
+			db.execute();
+			
+			if (db.next())
+				return db.getInt("cnt");
+			else
+				return -1;
+		} catch (Exception e) {
 			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
 			throw new RuntimeException(e);
 		} finally {

@@ -1,4 +1,4 @@
-package framework.init.initDAO;
+package framework.init.dao;
 
 import java.util.Date;
 

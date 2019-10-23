@@ -9,6 +9,7 @@ import java.util.Date;
  */
 public class SampleVideoVO {
 
+	private int seq;
 	private String fileName;
 	private String fileExt;
 	private String mimeType;
@@ -32,6 +33,20 @@ public class SampleVideoVO {
 		this.mimeType = mimeType;
 		this.volume = volume;
 		this.volumeStr = volumeStr;
+		this.storageServerId = storageServerId;
+		this.directory = directory;
+		this.regdate = regdate;
+	}
+
+	public SampleVideoVO(int seq, String fileName, String fileExt, String mimeType, long volume, String volumeStr,
+			int storageServerId, String directory, Date regdate) {
+		super();
+		this.seq = seq;
+		this.fileName = fileName;
+		this.fileExt = fileExt;
+		this.mimeType = mimeType;
+		this.volume = volume;
+		this.volumeStr = volumeStr;
 		this.vCodec = null;
 		this.aCodec = null;
 		this.width = -1;
@@ -41,6 +56,12 @@ public class SampleVideoVO {
 		this.regdate = regdate;
 	}
 	
+	public int getSeq() {
+		return seq;
+	}
+	public void setSeq(int seq) {
+		this.seq = seq;
+	}
 	public String getFileName() {
 		return fileName;
 	}
@@ -119,5 +140,4 @@ public class SampleVideoVO {
 	public void setFileCategory(String fileCategory) {
 		this.fileCategory = fileCategory;
 	}
-	
 }

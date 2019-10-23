@@ -77,7 +77,7 @@ public class EncodingQueue {
 	 */
 	private void process() throws SQLException {
 		curStatus = STATUS_WORKING;
-		EncodingQueueVO element = dao.getNextEncodingWork();
+		EncodingQueueVO element = dao.getNextEncodingWork(ServerConfig.getServerId());
 		if (element != null) {
 			curEncodingSeq = element.getSeq();
 			dao.updateCurWorkStartStatus(curEncodingSeq, new Date(), ServerConfig.getServerId());

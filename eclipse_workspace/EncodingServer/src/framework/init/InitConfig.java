@@ -13,8 +13,8 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import framework.init.initDAO.StorageServerVO;
-import framework.init.initDAO.StorageServerDAO;
+import framework.init.dao.StorageServerDAO;
+import framework.init.dao.StorageServerVO;
 import framework.util.ByteUtil;
 import framework.util.FileUtil;
 import framework.util.LogUtil;
