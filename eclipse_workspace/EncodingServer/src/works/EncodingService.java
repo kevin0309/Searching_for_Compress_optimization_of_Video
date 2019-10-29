@@ -1,6 +1,7 @@
 package works;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,12 +28,10 @@ public class EncodingService implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent arg0) {
 		String ffmpegPath = ServerConfig.getFFMPEGPath();
 		try {
-			File file = new File(ffmpegPath);
-			
-			if (!file.exists())
-				throw new Exception();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+			new File(ffmpegPath);
+		} catch (NullPointerException e) {
+			LogUtil.printErrLog("FFMPEG not found. Can't initiate Encoding service.");
+			return;
 		}
 		
 		//int schedulerThreadsAmount = ServerConfig.getHDDList().size();

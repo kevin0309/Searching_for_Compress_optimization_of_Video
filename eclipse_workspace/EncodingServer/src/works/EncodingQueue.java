@@ -115,6 +115,8 @@ public class EncodingQueue {
 				element.setNewDirectory(newPath);
 				dao.updateCurWorkEndStatus(curEncodingSeq, element.geteVolume(), element.geteDate(), 
 						element.getNewDirectory());
+				LogUtil.printLog("Encoding complete, encoding queue seq : " + curEncodingSeq + 
+						", preset : " + element.getPresetCode() + ", dest : " + newPath);
 			}
 			String newLogPath = pathFactory.makeNewPath(element.getPresetCode(), "txt");
 			FileUtil.write(newLogPath, wapb.getProcessLogs());

@@ -1,5 +1,6 @@
 package framework.init;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import framework.util.LogUtil;
@@ -190,8 +191,13 @@ public class ServerConfig {
 		return ffmpegPath;
 	}
 	static void setFFMPEGPath(String ffmpegPath) {
-		ServerConfig.ffmpegPath = ffmpegPath;
-		LogUtil.printLog("FFMPEG path has been set to [" + ffmpegPath + "].");
+		File temp = new File(ffmpegPath);
+		if (temp.exists()) {
+			ServerConfig.ffmpegPath = ffmpegPath;
+			LogUtil.printLog("FFMPEG path has been set to [" + ffmpegPath + "].");
+		}
+		else
+			LogUtil.printErrLog("FFMPEG path not exists. [" + ffmpegPath + "].");
 	}
 	/**
 	 * 서버 전역설정값
@@ -201,8 +207,13 @@ public class ServerConfig {
 		return ffprobePath;
 	}
 	static void setFFPROBEPath(String ffprobePath) {
-		ServerConfig.ffprobePath = ffprobePath;
-		LogUtil.printLog("FFPROBE path has been set to [" + ffprobePath + "].");
+		File temp = new File(ffprobePath);
+		if (temp.exists()) {
+			ServerConfig.ffprobePath = ffprobePath;
+			LogUtil.printLog("FFPROBE path has been set to [" + ffprobePath + "].");
+		}
+		else
+			LogUtil.printErrLog("FFPROBE path not exists. [" + ffprobePath + "].");
 	}
 	
 }
