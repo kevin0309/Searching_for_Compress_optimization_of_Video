@@ -124,7 +124,7 @@ public class EncodingQueueDAO {
 		
 		try {
 			db = new DBMng();
-			db.setQuery("select * from encoding_queue limit ?, ?");
+			db.setQuery("select * from encoding_queue order by seq desc limit ?, ?");
 			db.setInt(offset);
 			db.setInt(amount);
 			db.execute();

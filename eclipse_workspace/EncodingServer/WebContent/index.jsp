@@ -105,7 +105,7 @@
 		}
 	});
 	
-	var encodingQueueList = new makeList(10, '/EncodingServer/process/getEncodingQueueList', function(resultJSON) {
+	var encodingQueueList = new makeList(20, '/EncodingServer/process/getEncodingQueueList', function(resultJSON) {
 		var resEnt = resultJSON.resultData.result_entries;
 		var resEncodingQueueList = resultJSON.resultData.encodingQueueList;
 		$('#encoded-video-list tbody').empty();
@@ -114,6 +114,12 @@
 		
 		for (var i in resEncodingQueueList) {
 			var temp = resEncodingQueueList[i];
+			var tempServer;
+			for (var j in serverList.list)
+				if (serverList.list[j].seq === temp.assignedServerId) {
+					tempServer = serverList.list[j];
+					break;
+				}
 			var $tr = $('<tr></tr>');
 			$tr.append('<td>' + temp.seq + '</td>');
 			$tr.append('<td>' + temp.fileId + '</td>');
@@ -124,6 +130,14 @@
 			$tr.append('<td>' + temp.endDate + '</td>');
 			$tr.append('<td>' + temp.assignedServerId + '</td>');
 			$tr.append('<td>' + temp.regdate + '</td>');
+			if (tempServer.status == 1)
+				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/encoded?id='+temp.seq+'">go</a></td>');
+			else
+				$tr.append('<td>go</td>');
+			if (tempServer.status == 1)
+				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/log?id='+temp.seq+'">go</a></td>');
+			else
+				$tr.append('<td>go</td>');
 			$('#encoded-video-list tbody').append($tr);
 		}
 	});
@@ -136,30 +150,6 @@
 		<h2>Upload</h2>
 		<form action="/EncodingServer/upload/file" method="post" enctype="multipart/form-data">
 			<input type="file" name="upload_file">
-			<input type="submit" value="gogo">
-		</form>
-	</div>
-	
-	<div>
-		<h2>Original</h2>
-		<form action="/EncodingServer/download/original">
-			<input type="number" name="id">
-			<input type="submit" value="gogo">
-		</form>
-	</div>
-	
-	<div>
-		<h2>Encoded</h2>
-		<form action="/EncodingServer/download/encoded">
-			<input type="number" name="id">
-			<input type="submit" value="gogo">
-		</form>
-	</div>
-	
-	<div>
-		<h2>Log</h2>
-		<form action="/EncodingServer/download/log">
-			<input type="number" name="id">
 			<input type="submit" value="gogo">
 		</form>
 	</div>
@@ -211,7 +201,7 @@
 				<th>비디오 높이</th>
 				<th>저장된 서버 ID</th>
 				<th>등록일자</th>
-				<th>다운</th>
+				<th>영상다운</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -219,7 +209,7 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<td colspan="11">
+				<td colspan="12">
 					<div style="text-align: center;">
 						<button onclick="sampleVideoList.prevPage()">이전</button>
 						<button onclick="sampleVideoList.refresh()">새로고침</button>
@@ -245,6 +235,8 @@
 				<th>인코딩 종료 날짜</th>
 				<th>작업 할당된 서버 ID</th>
 				<th>등록일자</th>
+				<th>영상다운</th>
+				<th>로그다운</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -252,7 +244,7 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<td colspan="9">
+				<td colspan="11">
 					<div style="text-align: center;">
 						<button onclick="encodingQueueList.prevPage()">이전</button>
 						<button onclick="encodingQueueList.refresh()">새로고침</button>
