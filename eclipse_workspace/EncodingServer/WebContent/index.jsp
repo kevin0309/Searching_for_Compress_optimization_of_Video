@@ -141,11 +141,11 @@
 			$tr.append('<td>' + temp.endDate + '</td>');
 			$tr.append('<td>' + temp.assignedServerId + '</td>');
 			$tr.append('<td>' + temp.regdate + '</td>');
-			if (tempServer.status == 1)
+			if (tempServer.status == 1 && temp.status == 'finished')
 				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/encoded?id='+temp.seq+'">link</a></td>');
 			else
-				$tr.append('<td>go</td>');
-			if (tempServer.status == 1)
+				$tr.append('<td>link</td>');
+			if (tempServer.status == 1 && temp.status == 'finished')
 				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/log?id='+temp.seq+'">link</a></td>');
 			else
 				$tr.append('<td>link</td>');
