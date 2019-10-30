@@ -9,15 +9,22 @@
 <title>Management</title>
 <link rel="stylesheet" type="text/css" href="/EncodingServer/weblib/css/axicon/axicon.min.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <style type="text/css">
-	.file-handler>div {
-		width: calc(25% - 50px);
+	.card {
 		padding: 20px;
 		display: inline-block;
 		border: 1px solid #aaa;
+	}
+	
+	.table.table-sm td, .table.table-sm th {
+		vertical-align: middle;
+	}
+	
+	.table.table-sm th {
+		text-align: center;
 	}
 </style>
 <script type="text/javascript">
@@ -102,9 +109,9 @@
 			$tr.append('<td>' + temp.storedServerId + '</td>');
 			$tr.append('<td>' + temp.regdate + '</td>');
 			if (tempServer.status == 1)
-				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/original?id='+temp.seq+'">go</a></td>');
+				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/original?id='+temp.seq+'">link</a></td>');
 			else
-				$tr.append('<td>go</td>');
+				$tr.append('<td>link</td>');
 			$('#sample-video-list tbody').append($tr);
 		}
 	});
@@ -135,13 +142,13 @@
 			$tr.append('<td>' + temp.assignedServerId + '</td>');
 			$tr.append('<td>' + temp.regdate + '</td>');
 			if (tempServer.status == 1)
-				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/encoded?id='+temp.seq+'">go</a></td>');
+				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/encoded?id='+temp.seq+'">link</a></td>');
 			else
 				$tr.append('<td>go</td>');
 			if (tempServer.status == 1)
-				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/log?id='+temp.seq+'">go</a></td>');
+				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/log?id='+temp.seq+'">link</a></td>');
 			else
-				$tr.append('<td>go</td>');
+				$tr.append('<td>link</td>');
 			$('#encoded-video-list tbody').append($tr);
 		}
 	});
@@ -149,21 +156,33 @@
 </head>
 <body>
 <div class="container">
-<h1>Encoding Server version <%=ServerConfig.getProjectVersion() %></h1>
-<div class="file-handler">
-	<div>
-		<h2>Upload</h2>
+<h1 style="margin: 50px auto;">Encoding Server version</h1>
+<div>
+	<h2>
+		current server info
+	</h2>
+	<ul>
+		<li>id : <%=ServerConfig.getServerId() %></li>
+		<li>name : <%=ServerConfig.getServerNickname() %></li>
+		<li>ip address : <%=ServerConfig.getIpAddr() %>:<%=ServerConfig.getServerPortNum() %></li>
+		<li>mac address : <%=ServerConfig.getMacAddr() %></li>
+		<li>version : <%=ServerConfig.getProjectVersion() %></li>
+	</ul>
+</div>
+<div class="file-handler" style="margin: 30px auto;">
+	<div class="card">
+		<h2>Sample video upload</h2>
 		<form action="/EncodingServer/upload/file" method="post" enctype="multipart/form-data">
 			<input type="file" name="upload_file">
-			<input type="submit" value="gogo">
+			<input type="submit" value="upload" class="btn btn-outline-success btn-sm">
 		</form>
 	</div>
 </div>
 
-<div>
+<div style="margin: 30px auto;">
 	<h2>서버 목록</h2>
-	<table id="server-list" border="1">
-		<thead>
+	<table id="server-list" class="table table-striped table-bordered table-hover table-sm">
+		<thead class="thead-dark">
 			<tr>
 				<th>번호</th>
 				<th>서버별칭</th>
@@ -180,9 +199,9 @@
 			<tr>
 				<td colspan="6">
 					<div style="text-align: center;">
-						<button onclick="serverList.prevPage()">이전</button>
-						<button onclick="serverList.refresh()">새로고침</button>
-						<button onclick="serverList.nextPage()">다음</button>
+						<button onclick="serverList.prevPage()" class="btn btn-outline-dark btn-sm">이전</button>
+						<button onclick="serverList.refresh()" class="btn btn-outline-dark btn-sm">새로고침</button>
+						<button onclick="serverList.nextPage()" class="btn btn-outline-dark btn-sm">다음</button>
 					</div>
 				</td>
 			</tr>
@@ -190,10 +209,10 @@
 	</table>
 </div>
 
-<div>
+<div style="margin: 30px auto;">
 	<h2>샘플 영상 목록</h2>
-	<table id="sample-video-list" border="1">
-		<thead>
+	<table id="sample-video-list" class="table table-striped table-bordered table-hover table-sm">
+		<thead class="thead-dark">
 			<tr>
 				<th>번호</th>
 				<th>파일명</th>
@@ -216,9 +235,9 @@
 			<tr>
 				<td colspan="12">
 					<div style="text-align: center;">
-						<button onclick="sampleVideoList.prevPage()">이전</button>
-						<button onclick="sampleVideoList.refresh()">새로고침</button>
-						<button onclick="sampleVideoList.nextPage()">다음</button>
+						<button onclick="sampleVideoList.prevPage()" class="btn btn-outline-dark btn-sm">이전</button>
+						<button onclick="sampleVideoList.refresh()" class="btn btn-outline-dark btn-sm">새로고침</button>
+						<button onclick="sampleVideoList.nextPage()" class="btn btn-outline-dark btn-sm">다음</button>
 					</div>
 				</td>
 			</tr>
@@ -226,10 +245,10 @@
 	</table>
 </div>
 
-<div>
+<div style="margin: 30px auto;">
 	<h2>인코딩 대기열 목록</h2>
-	<table id="encoded-video-list" border="1">
-		<thead>
+	<table id="encoded-video-list" class="table table-striped table-bordered table-hover table-sm">
+		<thead class="thead-dark">
 			<tr>
 				<th>번호</th>
 				<th>파일 ID</th>
@@ -251,9 +270,9 @@
 			<tr>
 				<td colspan="11">
 					<div style="text-align: center;">
-						<button onclick="encodingQueueList.prevPage()">이전</button>
-						<button onclick="encodingQueueList.refresh()">새로고침</button>
-						<button onclick="encodingQueueList.nextPage()">다음</button>
+						<button onclick="encodingQueueList.prevPage()" class="btn btn-outline-dark btn-sm">이전</button>
+						<button onclick="encodingQueueList.refresh()" class="btn btn-outline-dark btn-sm">새로고침</button>
+						<button onclick="encodingQueueList.nextPage()" class="btn btn-outline-dark btn-sm">다음</button>
 					</div>
 				</td>
 			</tr>
