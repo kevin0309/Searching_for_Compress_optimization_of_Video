@@ -99,6 +99,7 @@ public class RedirectPageController extends HttpServlet{
 					mapper = handler.doPost(req, resp);
 			} catch (Exception e) {
 				LogUtil.printLog(req.getRemoteAddr(), "Status : Server Logic error occured. ("+e.getMessage()+")");
+				e.printStackTrace();
 				throw new ServletException(e);
 			}
 			

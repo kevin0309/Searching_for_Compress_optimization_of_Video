@@ -156,7 +156,7 @@
 </head>
 <body>
 <div class="container">
-<h1 style="margin: 50px auto;">Encoding Server version</h1>
+<h1 style="margin: 50px auto;">Encoding Server</h1>
 <div>
 	<h2>
 		current server info

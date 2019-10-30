@@ -105,6 +105,7 @@ public class FileDownloadController extends HttpServlet{
 				//do nothing
 			} catch (Exception e) {
 				LogUtil.printLog(req.getRemoteAddr(), "Server Logic error occured. ("+e.getLocalizedMessage()+")");
+				e.printStackTrace();
 			}
 		}						
 	}
