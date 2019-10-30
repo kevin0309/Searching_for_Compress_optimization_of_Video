@@ -30,8 +30,6 @@
 <script type="text/javascript">
 	$('document').ready(function() {
 		serverList.refresh(0, 10);
-		sampleVideoList.refresh(0, 20);
-		encodingQueueList.refresh(0, 30);
 	});
 	
 	function makeList(defAmount, url, callback) {
@@ -79,6 +77,8 @@
 			$tr.append('<td>' + temp.regdate + '</td>');
 			$('#server-list tbody').append($tr);
 		}
+		sampleVideoList.refresh(0, 20);
+		encodingQueueList.refresh(0, 30);
 	})
 	
 	var sampleVideoList = new makeList(10, '/EncodingServer/process/getSampleVideoList', function(resultJSON) {
@@ -158,9 +158,7 @@
 <div class="container">
 <h1 style="margin: 50px auto;">Encoding Server</h1>
 <div>
-	<h2>
-		current server info
-	</h2>
+	<h2>Current server info</h2>
 	<ul>
 		<li>id : <%=ServerConfig.getServerId() %></li>
 		<li>name : <%=ServerConfig.getServerNickname() %></li>
@@ -169,18 +167,9 @@
 		<li>version : <%=ServerConfig.getProjectVersion() %></li>
 	</ul>
 </div>
-<div class="file-handler" style="margin: 30px auto;">
-	<div class="card">
-		<h2>Sample video upload</h2>
-		<form action="/EncodingServer/upload/file" method="post" enctype="multipart/form-data">
-			<input type="file" name="upload_file">
-			<input type="submit" value="upload" class="btn btn-outline-success btn-sm">
-		</form>
-	</div>
-</div>
 
 <div style="margin: 30px auto;">
-	<h2>서버 목록</h2>
+	<h2>Server list</h2>
 	<table id="server-list" class="table table-striped table-bordered table-hover table-sm">
 		<thead class="thead-dark">
 			<tr>
@@ -209,8 +198,18 @@
 	</table>
 </div>
 
+<div class="file-handler" style="margin: 30px auto;">
+	<div class="card">
+		<h2>Sample video upload</h2>
+		<form action="/EncodingServer/upload/file" method="post" enctype="multipart/form-data">
+			<input type="file" name="upload_file">
+			<input type="submit" value="upload" class="btn btn-outline-success btn-sm">
+		</form>
+	</div>
+</div>
+
 <div style="margin: 30px auto;">
-	<h2>샘플 영상 목록</h2>
+	<h2>Sample video list</h2>
 	<table id="sample-video-list" class="table table-striped table-bordered table-hover table-sm">
 		<thead class="thead-dark">
 			<tr>
@@ -246,7 +245,7 @@
 </div>
 
 <div style="margin: 30px auto;">
-	<h2>인코딩 대기열 목록</h2>
+	<h2>Encoding queue list</h2>
 	<table id="encoded-video-list" class="table table-striped table-bordered table-hover table-sm">
 		<thead class="thead-dark">
 			<tr>
