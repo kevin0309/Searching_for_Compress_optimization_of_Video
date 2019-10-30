@@ -23,7 +23,8 @@ public class EncodingQueueDAO {
 		
 		try {
 			db = new DBMng();
-			db.setQuery("select * from encoding_queue eq where assigned_server_id is null and status = 'waiting' and file_id = (select seq from sample_video where seq = eq.file_id and sample_video.storage_server_id = ?) limit 1");
+			db.setQuery("select * from encoding_queue eq where assigned_server_id = ? and status = 'waiting' and file_id = (select seq from sample_video where seq = eq.file_id and sample_video.storage_server_id = ?) limit 1");
+			db.setInt(curServerId);
 			db.setInt(curServerId);
 			db.execute();
 			if (db.next()) {
