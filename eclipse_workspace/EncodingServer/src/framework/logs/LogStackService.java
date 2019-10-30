@@ -86,9 +86,7 @@ public class LogStackService implements ServletContextListener {
 		try {
 		if (!isInit) {
 			addLogToFile();
-			if (!curLogFile.exists())
-				curLogFile.delete();
-			else
+			if (curLogFile.exists())
 				//DB에 추가
 				if (!ServerConfig.isDev()) {
 					try {
