@@ -17,6 +17,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import framework.init.ServerConfig;
+import framework.util.DateUtil;
 import framework.util.FileUtil;
 import framework.util.LogUtil;
 
@@ -45,6 +46,7 @@ public class LogStackService implements ServletContextListener {
 		if (interval > 0) {
 			scheduler.shutdownNow();
 			saveLog(false, true);
+			System.out.println("[LogStackService] - Shutdown scheduler complete. Save the remaining logs.");
 		}
 	}
 
@@ -64,6 +66,9 @@ public class LogStackService implements ServletContextListener {
 			public void run() {
 				if (LogStackService.logStack.size() != 0)
 					LogStackService.saveLog(false, false);
+				else
+					if (ServerConfig.isDev())
+						System.out.println("[DEVMODE]["+DateUtil.getSysdateStr()+"][LogStackService] - Empty logs.");
 			}
 		}, interval, interval, TimeUnit.MINUTES);
 	}
@@ -87,6 +92,7 @@ public class LogStackService implements ServletContextListener {
 		if (!isInit) {
 			addLogToFile();
 			if (curLogFile.exists())
+				System.out.println("["+DateUtil.getSysdateStr()+"][LogStackService] - make new log file : "+curLogFile.getName());
 				//DB에 추가
 				if (!ServerConfig.isDev()) {
 					try {
@@ -112,10 +118,7 @@ public class LogStackService implements ServletContextListener {
 		//로컬파일 생성
 		String newDirectory = ServerConfig.getLogStackDirectory()+"/"+year+"/"+month+"/"+date;
 		String newFilePath = newDirectory+"/"+sdf.format(curDate)+".txt";
-		System.out.println("LogStackService - make new log file : "+newFilePath+", "+sdf.format(curDate));
 		FileUtil.makeNewDirectory(newDirectory);
-		//File newFile = new File(newFilePath);
-		//FileUtil.write(newFilePath, "");
 		curLogFile = new File(newFilePath);
 		} catch (Exception e) {
 			e.printStackTrace();

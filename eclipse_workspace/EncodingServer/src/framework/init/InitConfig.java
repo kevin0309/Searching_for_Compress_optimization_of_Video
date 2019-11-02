@@ -158,7 +158,7 @@ public class InitConfig implements ServletContextListener {
 	 */
 	private static void setServerStatusToOffline() {
 		StorageServerDAO dao = new StorageServerDAO();
-		LogUtil.printLog("Update server profile status to offline.");
+		System.out.println("[InitConfig] - Update server profile status to offline.");
 		dao.updateExistedServerByMacAddr(ServerConfig.getServerNickname(), ServerConfig.getIpAddr()+":"+ServerConfig.getServerPortNum(), 
 				ServerConfig.getMacAddr(), 0, new Date());
 	}
