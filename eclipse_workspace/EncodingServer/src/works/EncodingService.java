@@ -21,7 +21,7 @@ import framework.util.LogUtil;
 public class EncodingService implements ServletContextListener {
 	
 	private static ArrayList<EncodingQueue> queues;
-	public static ScheduledExecutorService scheduler;
+	public static ScheduledExecutorService scheduler = null;
 
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
@@ -48,8 +48,10 @@ public class EncodingService implements ServletContextListener {
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
-		scheduler.shutdownNow();
-		System.out.println("[EncodingService] - Shutdown scheduler complete.");
+		if (scheduler != null) {
+		  scheduler.shutdownNow();
+		  System.out.println("[EncodingService] - Shutdown scheduler complete.");
+    }
 	}
 	
 	public static ScheduledExecutorService getScheduler() {

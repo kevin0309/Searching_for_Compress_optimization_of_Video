@@ -105,6 +105,7 @@ public class AjaxRequestController extends HttpServlet{
 				obj.put("resultData", "");
 				obj.put("statusMsg", "Server Logic error occured. ("+e.getLocalizedMessage()+")");
 				logMsg += "Status : Server Logic error occured. ("+e.getMessage()+")";
+				e.printStackTrace();
 			}
 			resp.setContentType("application/json");
 			resp.getWriter().println(JSONUtil.toString_obj(obj));

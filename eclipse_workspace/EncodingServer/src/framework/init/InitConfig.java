@@ -1,6 +1,7 @@
 package framework.init;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -8,7 +9,12 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
+import java.util.Set;
 
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.Query;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
@@ -47,19 +53,17 @@ public class InitConfig implements ServletContextListener {
 		ServerConfig.setServerNickname(configFileDest.split("\\.")[0]);
 		
 		String containerName = sce.getServletContext().getServletContextName();
-		if (containerName.equals("ROOT")) {
+		if (containerName.equals("ROOT"))
 			ServerConfig.setServiceContainerName("");
-			ServerConfig.setServerPortNum(80);
-		}
-		else {
+		else
 			ServerConfig.setServiceContainerName("/"+containerName);
-			ServerConfig.setServerPortNum(8080);
-		}
+		
 		ServerConfig.setProjectVersion(defProp.getProperty("projectVersion"));
 		ServerConfig.setLogStackDirectory(initProp.getProperty("logStackDirectory"));
 		ServerConfig.setLogStackInterval(PropertiesReader.getIntProperty(defProp, "logStackInterval", 0));
 		ServerConfig.setIsDev(initProp.getProperty("devmode").equals("true"));
 		setNetworkAddress();
+		setPortNumber();
 		
 		//사용가능한 디스크 스토리지 점검
 		String hddPathListSt = initProp.getProperty("fileStorageDirectoryPathList");
@@ -79,6 +83,19 @@ public class InitConfig implements ServletContextListener {
 		/*인코딩서버 전용설정********************************************/
 		ServerConfig.setFFMPEGPath(initProp.getProperty("FFMPEGPath")+"/ffmpeg.exe");
 		ServerConfig.setFFPROBEPath(initProp.getProperty("FFMPEGPath")+"/ffprobe.exe");
+	}
+	
+	private static void setPortNumber() {
+		MBeanServer beanServer = ManagementFactory.getPlatformMBeanServer();
+		Set<ObjectName> objectNames = null;
+		try {
+			objectNames = beanServer.queryNames(new ObjectName("*:type=Connector,*"), Query.match(Query.attr("protocol"), Query.value("HTTP/1.1")));
+		} catch (MalformedObjectNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String port = objectNames.iterator().next().getKeyProperty("port");
+		ServerConfig.setServerPortNum(Integer.parseInt(port));
 	}
 	
 	/**
