@@ -115,10 +115,14 @@ public class ClassifyFileService {
 		//비디오 해상도, 코덱 확인
 		WindowsAppProcessOptions getVideoMetadataOptions = 
 			new GetVideoMetadataOptions(ServerConfig.getFFPROBEPath(), newPath);
-		WindowsAppProcessBuilder wapb = new WindowsAppProcessBuilder(true);
-		wapb.process(getVideoMetadataOptions.generateCmdLine());
+		WindowsAppProcessBuilder wapb = new WindowsAppProcessBuilder();
+		try {
+			wapb.process(getVideoMetadataOptions.generateCmdLine());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		String wapbRes = "";
-		for (String out : wapb.getProcessLogs())
+		for (String out : wapb.getLogs())
 			wapbRes += out;
 		JSONParser parser = new JSONParser();
 		JSONObject metaData = (JSONObject) parser.parse(wapbRes);

@@ -34,6 +34,7 @@ public class DBMngScheduler implements ServletContextListener {
 	
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
+		System.out.println("[DBMngScheduler] - Shutdown scheduler complete.");
 		InitConfig.destroyConfigWithDBAcessRequired();
 		scheduler.shutdownNow();
 	}

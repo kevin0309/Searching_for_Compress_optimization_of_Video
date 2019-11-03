@@ -1,5 +1,9 @@
 package framework.logs;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +17,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import framework.init.ServerConfig;
+import framework.util.DateUtil;
 import framework.util.FileUtil;
 import framework.util.LogUtil;
 
@@ -26,14 +31,22 @@ public class LogStackService implements ServletContextListener {
 
 	private ScheduledExecutorService scheduler;
 	private static ArrayList<String> logStack = new ArrayList<>();
-	private int interval;
-	private LogDAO dao = new LogDAO();
+	private static File curLogFile;
+	private static int interval;
+	private static LogDAO dao = new LogDAO();
+	private static Date curDate;
+	private static String year;
+	private static String month;
+	private static String date;
+	private static String hour;
+	private static String min;
 	
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		if (interval > 0) {
 			scheduler.shutdownNow();
-			saveLog(true);
+			saveLog(false, true);
+			System.out.println("[LogStackService] - Shutdown scheduler complete. Save the remaining logs.");
 		}
 	}
 
@@ -44,54 +57,89 @@ public class LogStackService implements ServletContextListener {
 			LogUtil.printLog("LogStackService was not started by the configuration.");
 			return;
 		}
+		saveLog(true, false);
 		scheduler = Executors.newScheduledThreadPool(1);
 		LogUtil.printLog("LogStackService scheduler initiated.");
 		
 		scheduler.scheduleWithFixedDelay(new Runnable() {
 			@Override
 			public void run() {
-				if (logStack.size() != 0)
-					saveLog(false);
+				if (LogStackService.logStack.size() != 0)
+					LogStackService.saveLog(false, false);
+				else
+					if (ServerConfig.isDev())
+						System.out.println("[DEVMODE]["+DateUtil.getSysdateStr()+"][LogStackService] - Empty logs.");
 			}
 		}, interval, interval, TimeUnit.MINUTES);
 	}
 
 	public static void addLog(String log, boolean isErrorLog) {
-		logStack.add((isErrorLog?"[ERR]":"[LOG]")+log);
+		synchronized (logStack) {
+			if (logStack.size() == 100)
+				addLogToFile();
+			
+			logStack.add((isErrorLog?"[ERR]":"[LOG]")+log);
+		}
 	}
 	
 	/**
-	 * 누적된 로그를 저장, DB에 등록하고 초기화
+	 * 누적된 로그를 저장, DB에 등록
+	 * @param isInit
 	 * @param isTerminate
 	 */
-	private void saveLog(boolean isTerminate) {
-		Date curDate = new Date();
+	private static void saveLog(boolean isInit, boolean isTerminate) {
+		try {
+		if (!isInit) {
+			addLogToFile();
+			if (curLogFile.exists())
+				System.out.println("["+DateUtil.getSysdateStr()+"][LogStackService] - make new log file : "+curLogFile.getName());
+				//DB에 추가
+				if (!ServerConfig.isDev()) {
+					try {
+						if (isTerminate)
+							dao.insertNewLogFile(ServerConfig.getServiceContainerName(), ServerConfig.getServerId(), year, month, date, hour, min, -1, curDate);
+						else
+							dao.insertNewLogFile(ServerConfig.getServiceContainerName(), ServerConfig.getServerId(), year, month, date, hour, min, interval, curDate);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+		}
+		
+		curDate = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
 		String[] curDateStr = sdf.format(curDate).split("-");
-		String year = curDateStr[0];
-		String month = curDateStr[1];
-		String date = curDateStr[2];
-		String hour = curDateStr[3];
-		String min = curDateStr[4];
+		year = curDateStr[0];
+		month = curDateStr[1];
+		date = curDateStr[2];
+		hour = curDateStr[3];
+		min = curDateStr[4];
 		
 		//로컬파일 생성
 		String newDirectory = ServerConfig.getLogStackDirectory()+"/"+year+"/"+month+"/"+date;
 		String newFilePath = newDirectory+"/"+sdf.format(curDate)+".txt";
-		LogUtil.printLog("make new log file : "+newFilePath);
 		FileUtil.makeNewDirectory(newDirectory);
-		FileUtil.write(newFilePath, logStack);
-		logStack = new ArrayList<>();
-		
-		//DB에 추가
-		if (!ServerConfig.isDev()) {
-			try {
-				if (isTerminate)
-					dao.insertNewLogFile(ServerConfig.getServiceContainerName(), ServerConfig.getServerId(), year, month, date, hour, min, -1, curDate);
-				else
-					dao.insertNewLogFile(ServerConfig.getServiceContainerName(), ServerConfig.getServerId(), year, month, date, hour, min, interval, curDate);
-			} catch (SQLException e) {
-				e.printStackTrace();
+		curLogFile = new File(newFilePath);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void addLogToFile() {
+		if (logStack.size() == 0)
+			return;
+		try {
+			FileWriter fw = new FileWriter(curLogFile, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			for (String logMsg : logStack) {
+				bw.write(logMsg);
+				bw.newLine();
 			}
+			bw.close();
+			fw.close();
+			logStack = new ArrayList<>();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

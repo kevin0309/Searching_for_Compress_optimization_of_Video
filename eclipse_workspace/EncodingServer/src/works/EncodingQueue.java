@@ -1,6 +1,7 @@
 package works;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,9 +9,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import framework.init.ServerConfig;
-import framework.servlet.fileRequest.SampleVideoDAO;
 import framework.servlet.fileRequest.HddSelector;
-import framework.util.FileUtil;
+import framework.servlet.fileRequest.SampleVideoDAO;
 import framework.util.GenerateFilePathFactory;
 import framework.util.LogUtil;
 import framework.util.windowsAppProcessing.WindowsAppProcessBuilder;
@@ -103,23 +103,26 @@ public class EncodingQueue {
 			GenerateFilePathFactory pathFactory = new GenerateFilePathFactory(new Date(), 
 					hs.getHDD(element.getVideo().getVolume() * 2));
 			String newPath = pathFactory.makeNewPath(element.getPresetCode(), fileExt);
-			
+
+			String newLogPath = pathFactory.makeNewPath(element.getPresetCode(), "txt");
 			VideoEncodeProcessCommand cmd = new VideoEncodeProcessCommand(options, targetPath, newPath);
-			WindowsAppProcessBuilder wapb = new WindowsAppProcessBuilder(true);
+			WindowsAppProcessBuilder wapb = new WindowsAppProcessBuilder(newLogPath);
 			LogUtil.printLog("Encoding start, encoding queue seq : " + curEncodingSeq + 
 					", preset : " + element.getPresetCode() + ", target : " + element.getVideo().getFileName());
-			if (wapb.process(cmd.generateCmdLine())) {
-				File newFile = new File(newPath);
-				element.seteVolume(newFile.length());
-				element.seteDate(new Date());
-				element.setNewDirectory(newPath);
-				dao.updateCurWorkEndStatus(curEncodingSeq, element.geteVolume(), element.geteDate(), 
-						element.getNewDirectory());
-				LogUtil.printLog("Encoding complete, encoding queue seq : " + curEncodingSeq + 
-						", preset : " + element.getPresetCode() + ", dest : " + newPath);
+			try {
+				if (wapb.process(cmd.generateCmdLine())) {
+					File newFile = new File(newPath);
+					element.seteVolume(newFile.length());
+					element.seteDate(new Date());
+					element.setNewDirectory(newPath);
+					dao.updateCurWorkEndStatus(curEncodingSeq, element.geteVolume(), element.geteDate(), 
+							element.getNewDirectory());
+					LogUtil.printLog("Encoding complete, encoding queue seq : " + curEncodingSeq + 
+							", preset : " + element.getPresetCode() + ", dest : " + newPath);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			String newLogPath = pathFactory.makeNewPath(element.getPresetCode(), "txt");
-			FileUtil.write(newLogPath, wapb.getProcessLogs());
 			hs.close();
 		}
 		curStatus = STATUS_WAIT;
