@@ -75,13 +75,14 @@ public class SampleVideoDAO {
 		}
 	}
 	
-	public ArrayList<SampleVideoVO> selectSampleVideoList(int offset, int amount) {
+	public ArrayList<SampleVideoVO> selectSampleVideoList(int storageServerId, int offset, int amount) {
 		DBMng db = null;
 		ArrayList<SampleVideoVO> res = new ArrayList<>();
 		
 		try {
 			db = new DBMng();
-			db.setQuery("select * from sample_video order by seq desc limit ?, ?");
+			db.setQuery("select * from sample_video where storage_server_id = ? order by seq desc limit ?, ?");
+			db.setInt(storageServerId);
 			db.setInt(offset);
 			db.setInt(amount);
 			db.execute();
@@ -103,12 +104,13 @@ public class SampleVideoDAO {
 		return res;
 	}
 	
-	public int getTotalRowCnt() {
+	public int getTotalRowCnt(int storageServerId) {
 		DBMng db = null;
 		
 		try {
 			db = new DBMng();
-			db.setQuery("select count(1) cnt from sample_video");
+			db.setQuery("select count(1) cnt from sample_video where storage_server_id = ?");
+			db.setInt(storageServerId);
 			db.execute();
 			
 			if (db.next()) {
