@@ -1,4 +1,4 @@
-package works;
+package works.encoding;
 
 import java.util.ArrayList;
 

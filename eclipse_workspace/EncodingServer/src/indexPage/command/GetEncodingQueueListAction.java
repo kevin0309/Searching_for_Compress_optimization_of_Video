@@ -13,8 +13,8 @@ import framework.init.ServerConfig;
 import framework.servlet.controller.handler.AjaxRequestHandler;
 import framework.util.DateUtil;
 import framework.util.LogUtil;
-import works.EncodingQueueDAO;
-import works.EncodingQueueVO;
+import works.encoding.EncodingQueueDAO;
+import works.encoding.EncodingQueueVO;
 
 public class GetEncodingQueueListAction implements AjaxRequestHandler {
 
