@@ -91,8 +91,10 @@ public class WindowsAppProcessBuilder {
 			
 			if (saveLogToFile) { //로그파일로 저장
 				String cmd = null;
-				while((cmd = br.readLine()) != null) // 읽어들일 라인이 없을때까지 계속 반복
+				while((cmd = br.readLine()) != null) {// 읽어들일 라인이 없을때까지 계속 반복
 					bw.write(cmd);
+					bw.newLine();
+				}
 			}
 			else { //배열에 저장
 				String cmd = null;

@@ -27,8 +27,8 @@ public class EncodingQueue {
 	private int curStatus;
 	private int curEncodingSeq;
 
-	public static final int DELAY = 5 * 1000;
-	public static final int INTERVAL = 10 * 1000;
+	public static final int DELAY = 5;
+	public static final int INTERVAL = 10;
 	
 	public static final int STATUS_WAIT = 100;
 	public static final int STATUS_WORKING = 200;
@@ -64,7 +64,7 @@ public class EncodingQueue {
 						e.printStackTrace();
 					}
 			}
-		}, DELAY, INTERVAL, TimeUnit.MILLISECONDS);
+		}, DELAY, INTERVAL, TimeUnit.SECONDS);
 	}
 	
 	/**
