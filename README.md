@@ -23,6 +23,8 @@
 ```
 ### 2. EncodingServer
 인코딩 연산을 진행하는 서버
+<br>
+http://welcome.blog-yh.kr/EncodingServer/
 ### 개발/실행 환경
 ```
 - OS : Microsoft Windows 10
@@ -58,6 +60,7 @@
 - COS.jar
 - JSON-simple-1.1.1.jar
 - juniversechardet-2.1.0.jar (https://github.com/albfernandez/juniversalchardet)
+- structural-similarity (https://github.com/rhys-e/structural-similarity)
 ```
 ### Front-end
 ```

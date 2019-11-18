@@ -17,8 +17,8 @@ import framework.init.ServerConfig;
 import framework.servlet.controller.handler.FileDownloadHandler;
 import framework.util.JSONUtil;
 import framework.util.LogUtil;
-import works.EncodingQueueDAO;
-import works.EncodingQueueVO;
+import works.encoding.EncodingQueueDAO;
+import works.encoding.EncodingQueueVO;
 
 /**
  * 인코딩 결과 로그파일을 다운로드 하는 서블릿 핸들러 클래스

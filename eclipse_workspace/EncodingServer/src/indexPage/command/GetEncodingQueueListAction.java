@@ -9,11 +9,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 
+import framework.init.ServerConfig;
 import framework.servlet.controller.handler.AjaxRequestHandler;
 import framework.util.DateUtil;
 import framework.util.LogUtil;
-import works.EncodingQueueDAO;
-import works.EncodingQueueVO;
+import works.encoding.EncodingQueueDAO;
+import works.encoding.EncodingQueueVO;
 
 public class GetEncodingQueueListAction implements AjaxRequestHandler {
 
@@ -39,7 +40,7 @@ public class GetEncodingQueueListAction implements AjaxRequestHandler {
 		EncodingQueueDAO dao = new EncodingQueueDAO();
 		
 		//비디오 리스트 조회
-		ArrayList<EncodingQueueVO> eqList = dao.getEncodingQueueList(offset, amount);
+		ArrayList<EncodingQueueVO> eqList = dao.getEncodingQueueList(ServerConfig.getServerId(), offset, amount);
 		JSONArray eqList2 = new JSONArray();
 		for (EncodingQueueVO eq : eqList) {
 			JSONObject eq2 = new JSONObject();
@@ -59,7 +60,7 @@ public class GetEncodingQueueListAction implements AjaxRequestHandler {
 		JSONObject entries = new JSONObject();
 		entries.put("offset", offset);
 		entries.put("amount", amount);
-		entries.put("total", dao.getTotalRowCnt());
+		entries.put("total", dao.getTotalRowCnt(ServerConfig.getServerId()));
 		res.put("result_entries", entries);
 		
 		return res;

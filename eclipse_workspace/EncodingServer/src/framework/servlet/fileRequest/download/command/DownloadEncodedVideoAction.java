@@ -18,8 +18,8 @@ import framework.servlet.controller.handler.FileDownloadHandler;
 import framework.util.FileUtil;
 import framework.util.JSONUtil;
 import framework.util.LogUtil;
-import works.EncodingQueueDAO;
-import works.EncodingQueueVO;
+import works.encoding.EncodingQueueDAO;
+import works.encoding.EncodingQueueVO;
 
 /**
  * 인코딩 결과 비디오파일을 다운로드하는 서블릿 핸들러 클래스

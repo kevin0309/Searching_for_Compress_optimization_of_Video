@@ -1,4 +1,4 @@
-package works;
+package works.encoding;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -119,13 +119,14 @@ public class EncodingQueueDAO {
 		}
 	}
 	
-	public ArrayList<EncodingQueueVO> getEncodingQueueList(int offset, int amount) {
+	public ArrayList<EncodingQueueVO> getEncodingQueueList(int assignedServerId, int offset, int amount) {
 		DBMng db = null;
 		ArrayList<EncodingQueueVO> res = new ArrayList<>();
 		
 		try {
 			db = new DBMng();
-			db.setQuery("select * from encoding_queue order by seq desc limit ?, ?");
+			db.setQuery("select * from encoding_queue where assigned_server_id = ? order by seq desc limit ?, ?");
+			db.setInt(assignedServerId);
 			db.setInt(offset);
 			db.setInt(amount);
 			db.execute();
@@ -144,12 +145,13 @@ public class EncodingQueueDAO {
 		}
 	}
 	
-	public int getTotalRowCnt() {
+	public int getTotalRowCnt(int assignedServerId) {
 		DBMng db = null;
 		
 		try {
 			db = new DBMng();
-			db.setQuery("select count(1) cnt from encoding_queue");
+			db.setQuery("select count(1) cnt from encoding_queue where assigned_server_id = ?");
+			db.setInt(assignedServerId);
 			db.execute();
 			
 			if (db.next())

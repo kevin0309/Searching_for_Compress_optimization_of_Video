@@ -9,6 +9,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 
+import framework.init.ServerConfig;
 import framework.servlet.controller.handler.AjaxRequestHandler;
 import framework.servlet.fileRequest.SampleVideoDAO;
 import framework.servlet.fileRequest.SampleVideoVO;
@@ -39,7 +40,7 @@ public class GetSampleVideoListAction implements AjaxRequestHandler {
 		SampleVideoDAO dao = new SampleVideoDAO();
 		
 		//비디오 리스트 조회
-		ArrayList<SampleVideoVO> vList = dao.selectSampleVideoList(offset, amount);
+		ArrayList<SampleVideoVO> vList = dao.selectSampleVideoList(ServerConfig.getServerId(), offset, amount);
 		JSONArray vList2 = new JSONArray();
 		for (SampleVideoVO sv : vList) {
 			JSONObject sv2 = new JSONObject();
@@ -61,7 +62,7 @@ public class GetSampleVideoListAction implements AjaxRequestHandler {
 		JSONObject entries = new JSONObject();
 		entries.put("offset", offset);
 		entries.put("amount", amount);
-		entries.put("total", dao.getTotalRowCnt());
+		entries.put("total", dao.getTotalRowCnt(ServerConfig.getServerId()));
 		res.put("result_entries", entries);
 		
 		return res;

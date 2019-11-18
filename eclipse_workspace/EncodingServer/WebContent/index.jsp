@@ -26,6 +26,10 @@
 	.table.table-sm th {
 		text-align: center;
 	}
+	
+	.table.table-sm .td-center {
+		text-align: center;
+	}
 </style>
 <script type="text/javascript">
 	$('document').ready(function() {
@@ -69,12 +73,18 @@
 		for (var i in resServerList) {
 			var temp = resServerList[i];
 			var $tr = $('<tr></tr>');
-			$tr.append('<td>' + temp.seq + '</td>');
+			$tr.append('<td class="td-center">' + temp.seq + '</td>');
 			$tr.append('<td>' + temp.desc + '</td>');
-			$tr.append('<td>' + temp.addr + '</td>');
-			$tr.append('<td>' + temp.macAddr + '</td>');
-			$tr.append('<td>' + temp.status + '</td>');
-			$tr.append('<td>' + temp.regdate + '</td>');
+			if (temp.status == '1')
+				$tr.append('<td><a href="http://'+temp.addr+'/EncodingServer/" target="_blank">'+temp.addr+'</a></td>');
+			else
+				$tr.append('<td>' + temp.addr + '</td>');
+			$tr.append('<td class="td-center">' + temp.macAddr + '</td>');
+			if (temp.status == '1')
+				$tr.append('<td class="td-center">online</td>');
+			else
+				$tr.append('<td class="td-center" style="color: #aaa;">offline</td>');
+			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
 			$('#server-list tbody').append($tr);
 		}
 		sampleVideoList.refresh(0, 20);
@@ -88,6 +98,15 @@
 		sampleVideoList.total = resEnt.total;
 		sampleVideoList.list = resFileList;
 		
+		if (sampleVideoList.total == 0) {
+			$('#sample-video-list tbody').append(
+				'<tr>' +
+					'<td colspan="11" class="td-center" style="color: #d44;">No result</td>' +
+				'</tr>'
+			);
+			return;
+		}
+		
 		for (var i in resFileList) {
 			var temp = resFileList[i];
 			var tempServer;
@@ -97,21 +116,20 @@
 					break;
 				}
 			var $tr = $('<tr></tr>');
-			$tr.append('<td>' + temp.seq + '</td>');
+			$tr.append('<td class="td-center">' + temp.seq + '</td>');
 			$tr.append('<td>' + temp.fileName + '</td>');
-			$tr.append('<td>' + temp.fileExt + '</td>');
+			$tr.append('<td class="td-center">' + temp.fileExt + '</td>');
 			$tr.append('<td>' + temp.mimeType + '</td>');
-			$tr.append('<td>' + temp.fileVolume + '</td>');
-			$tr.append('<td>' + temp.vCodec + '</td>');
-			$tr.append('<td>' + temp.aCodec + '</td>');
-			$tr.append('<td>' + temp.width + '</td>');
-			$tr.append('<td>' + temp.height + '</td>');
-			$tr.append('<td>' + temp.storedServerId + '</td>');
-			$tr.append('<td>' + temp.regdate + '</td>');
+			$tr.append('<td class="td-center">' + temp.fileVolume + '</td>');
+			$tr.append('<td class="td-center">' + temp.vCodec + '</td>');
+			$tr.append('<td class="td-center">' + temp.aCodec + '</td>');
+			$tr.append('<td class="td-center">' + temp.width + '</td>');
+			$tr.append('<td class="td-center">' + temp.height + '</td>');
+			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
 			if (tempServer.status == 1)
-				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/original?id='+temp.seq+'">link</a></td>');
+				$tr.append('<td class="td-center"><a href="http://'+tempServer.addr+'/EncodingServer/download/original?id='+temp.seq+'">link</a></td>');
 			else
-				$tr.append('<td>link</td>');
+				$tr.append('<td class="td-center" style="color: #aaa;">link</td>');
 			$('#sample-video-list tbody').append($tr);
 		}
 	});
@@ -123,6 +141,15 @@
 		encodingQueueList.total = resEnt.total;
 		encodingQueueList.list = resEncodingQueueList;
 		
+		if (encodingQueueList.total == 0) {
+			$('#encoded-video-list tbody').append(
+				'<tr>' +
+					'<td colspan="10" class="td-center" style="color: #d44;">No result</td>' +
+				'</tr>'
+			);
+			return;
+		}
+		
 		for (var i in resEncodingQueueList) {
 			var temp = resEncodingQueueList[i];
 			var tempServer;
@@ -132,23 +159,22 @@
 					break;
 				}
 			var $tr = $('<tr></tr>');
-			$tr.append('<td>' + temp.seq + '</td>');
-			$tr.append('<td>' + temp.fileId + '</td>');
-			$tr.append('<td>' + temp.presetCode + '</td>');
-			$tr.append('<td>' + temp.status + '</td>');
-			$tr.append('<td>' + temp.endVolume + '</td>');
-			$tr.append('<td>' + temp.startDate + '</td>');
-			$tr.append('<td>' + temp.endDate + '</td>');
-			$tr.append('<td>' + temp.assignedServerId + '</td>');
-			$tr.append('<td>' + temp.regdate + '</td>');
+			$tr.append('<td class="td-center">' + temp.seq + '</td>');
+			$tr.append('<td class="td-center">' + temp.fileId + '</td>');
+			$tr.append('<td class="td-center">' + temp.presetCode + '</td>');
+			$tr.append('<td class="td-center">' + temp.status + '</td>');
+			$tr.append('<td class="td-center">' + temp.endVolume + '</td>');
+			$tr.append('<td class="td-center">' + temp.startDate + '</td>');
+			$tr.append('<td class="td-center">' + temp.endDate + '</td>');
+			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
 			if (tempServer.status == 1 && temp.status == 'finished')
-				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/encoded?id='+temp.seq+'">link</a></td>');
+				$tr.append('<td class="td-center"><a href="http://'+tempServer.addr+'/EncodingServer/download/encoded?id='+temp.seq+'">link</a></td>');
 			else
-				$tr.append('<td>link</td>');
+				$tr.append('<td class="td-center">link</td>');
 			if (tempServer.status == 1 && temp.status == 'finished')
-				$tr.append('<td><a href="http://'+tempServer.addr+'/EncodingServer/download/log?id='+temp.seq+'">link</a></td>');
+				$tr.append('<td class="td-center"><a href="http://'+tempServer.addr+'/EncodingServer/download/log?id='+temp.seq+'">link</a></td>');
 			else
-				$tr.append('<td>link</td>');
+				$tr.append('<td class="td-center">link</td>');
 			$('#encoded-video-list tbody').append($tr);
 		}
 	});
@@ -188,9 +214,9 @@
 			<tr>
 				<td colspan="6">
 					<div style="text-align: center;">
-						<button onclick="serverList.prevPage()" class="btn btn-outline-dark btn-sm">이전</button>
-						<button onclick="serverList.refresh()" class="btn btn-outline-dark btn-sm">새로고침</button>
-						<button onclick="serverList.nextPage()" class="btn btn-outline-dark btn-sm">다음</button>
+						<button onclick="serverList.prevPage()" class="btn btn-outline-dark btn-sm">prev</button>
+						<button onclick="serverList.refresh()" class="btn btn-outline-dark btn-sm">refresh</button>
+						<button onclick="serverList.nextPage()" class="btn btn-outline-dark btn-sm">next</button>
 					</div>
 				</td>
 			</tr>
@@ -199,7 +225,7 @@
 </div>
 
 <div class="file-handler" style="margin: 30px auto;">
-	<div class="card">
+	<div>
 		<h2>Sample video upload</h2>
 		<form action="/EncodingServer/upload/file" method="post" enctype="multipart/form-data">
 			<input type="file" name="upload_file">
@@ -222,7 +248,6 @@
 				<th>오디오 코덱</th>
 				<th>비디오 너비</th>
 				<th>비디오 높이</th>
-				<th>저장된 서버 ID</th>
 				<th>등록일자</th>
 				<th>영상다운</th>
 			</tr>
@@ -232,11 +257,11 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<td colspan="12">
+				<td colspan="11">
 					<div style="text-align: center;">
-						<button onclick="sampleVideoList.prevPage()" class="btn btn-outline-dark btn-sm">이전</button>
-						<button onclick="sampleVideoList.refresh()" class="btn btn-outline-dark btn-sm">새로고침</button>
-						<button onclick="sampleVideoList.nextPage()" class="btn btn-outline-dark btn-sm">다음</button>
+						<button onclick="sampleVideoList.prevPage()" class="btn btn-outline-dark btn-sm">prev</button>
+						<button onclick="sampleVideoList.refresh()" class="btn btn-outline-dark btn-sm">refresh</button>
+						<button onclick="sampleVideoList.nextPage()" class="btn btn-outline-dark btn-sm">next</button>
 					</div>
 				</td>
 			</tr>
@@ -256,7 +281,6 @@
 				<th>작업 후 용량</th>
 				<th>인코딩 시작 날짜</th>
 				<th>인코딩 종료 날짜</th>
-				<th>작업 할당된 서버 ID</th>
 				<th>등록일자</th>
 				<th>영상다운</th>
 				<th>로그다운</th>
@@ -267,11 +291,11 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<td colspan="11">
+				<td colspan="10">
 					<div style="text-align: center;">
-						<button onclick="encodingQueueList.prevPage()" class="btn btn-outline-dark btn-sm">이전</button>
-						<button onclick="encodingQueueList.refresh()" class="btn btn-outline-dark btn-sm">새로고침</button>
-						<button onclick="encodingQueueList.nextPage()" class="btn btn-outline-dark btn-sm">다음</button>
+						<button onclick="encodingQueueList.prevPage()" class="btn btn-outline-dark btn-sm">prev</button>
+						<button onclick="encodingQueueList.refresh()" class="btn btn-outline-dark btn-sm">refresh</button>
+						<button onclick="encodingQueueList.nextPage()" class="btn btn-outline-dark btn-sm">next</button>
 					</div>
 				</td>
 			</tr>
