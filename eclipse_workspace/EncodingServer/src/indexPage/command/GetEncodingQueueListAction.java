@@ -11,6 +11,8 @@ import org.json.simple.JSONObject;
 
 import framework.init.ServerConfig;
 import framework.servlet.controller.handler.AjaxRequestHandler;
+import framework.servlet.fileRequest.SampleVideoDAO;
+import framework.servlet.fileRequest.SampleVideoVO;
 import framework.util.DateUtil;
 import framework.util.LogUtil;
 import works.encoding.EncodingQueueDAO;
@@ -38,20 +40,30 @@ public class GetEncodingQueueListAction implements AjaxRequestHandler {
 		
 		JSONObject res = new JSONObject();
 		EncodingQueueDAO dao = new EncodingQueueDAO();
-		
 		//비디오 리스트 조회
 		ArrayList<EncodingQueueVO> eqList = dao.getEncodingQueueList(ServerConfig.getServerId(), offset, amount);
 		JSONArray eqList2 = new JSONArray();
 		for (EncodingQueueVO eq : eqList) {
+			SampleVideoDAO dao2 = new SampleVideoDAO();
+			SampleVideoVO video = dao2.selectSampleVideoById(eq.getFileId());
 			JSONObject eq2 = new JSONObject();
 			eq2.put("seq", eq.getSeq());
 			eq2.put("fileId", eq.getFileId());
 			eq2.put("presetCode", eq.getPresetCode());
 			eq2.put("status", eq.getStatus());
 			eq2.put("endVolume", eq.geteVolume());
+			if (eq.geteVolume() != 0)
+				eq2.put("volumeDifference", video.getVolume() - eq.geteVolume());
+			else
+				eq2.put("volumeDifference", null);
 			eq2.put("startDate", DateUtil.toString(eq.getsDate()));
 			eq2.put("endDate", DateUtil.toString(eq.geteDate()));
+			if (eq.getsDate() != null && eq.geteDate() != null)
+				eq2.put("elapsedTime", eq.geteDate().getTime() - eq.getsDate().getTime());
+			else
+				eq2.put("elapsedTime", null);
 			eq2.put("assignedServerId", eq.getAssignedServerId());
+			eq2.put("ssim", eq.getSsim());
 			eq2.put("regdate", DateUtil.toString(eq.getRegdate()));
 			eqList2.add(eq2);
 		}

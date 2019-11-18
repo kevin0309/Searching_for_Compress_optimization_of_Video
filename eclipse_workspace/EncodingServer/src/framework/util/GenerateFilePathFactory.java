@@ -1,5 +1,6 @@
 package framework.util;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -76,6 +77,25 @@ public class GenerateFilePathFactory {
 		String res = "";
 		res += toDirAbsolutePathString(fileDivision);
 		res += "/" + toNewFileNameString(fileExt, fileDivision);
+		return res;
+	}
+	
+	/**
+	 * 파일이 저장될 폴더까지의 절대경로 + 파일명
+	 * 해당 폴더가 존재하지 않을경우 만들어준다.
+	 * @param fileDivision
+	 * @param fileExt
+	 * @return 파일이 저장될 폴더까지의 절대경로 + 파일명
+	 */
+	public String makeNewThumbPath(String fileDivision) {
+		String res = "";
+		res += toDirAbsolutePathString(fileDivision);
+		res += "/" + date.getTime() + "_" + id;
+		if (fileDivision != null)
+			res += "_" + fileDivision;
+		res += "/";
+		File file = new File(res);
+		file.mkdir();
 		return res;
 	}
 }

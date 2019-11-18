@@ -80,7 +80,8 @@ public class WindowsAppProcessBuilder {
 			return false;
 		}
 		p.destroy();
-		bw.close();
+		if (saveLogToFile)
+			bw.close();
 		return true;
 	}
 	

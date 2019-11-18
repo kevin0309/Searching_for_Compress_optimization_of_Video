@@ -1,21 +1,19 @@
 package works.imageExtract;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import framework.init.ServerConfig;
-import framework.util.FileUtil;
 import framework.util.windowsAppProcessing.WindowsAppProcessOptions;
 
 public class ExtractKeyframeCommand implements WindowsAppProcessOptions {
 
 	private String videoPath;
-	private String videoName;
+	private String videoThumbPath;
 	
-	public ExtractKeyframeCommand(String videoPath) {
+	public ExtractKeyframeCommand(String videoPath, String videoThumbPath) {
 		super();
 		this.videoPath = videoPath;
-		videoName = FileUtil.getFileNameExceptExt(new File(videoPath));
+		this.videoThumbPath = videoThumbPath;
 	}
 
 	@Override
@@ -25,11 +23,11 @@ public class ExtractKeyframeCommand implements WindowsAppProcessOptions {
 		temp.add("-i");
 		temp.add(videoPath);
 		temp.add("-vf");
-		temp.add("\"select=eq(pict_type\\,I)\"");
-		temp.add("-vsync");
-		temp.add("vfr");
-		temp.add(videoName + "/thumb%03d.jpg");
-		
+		//temp.add("\"select=eq(pict_type\\,I)\"");
+		//temp.add("-vsync");
+		//temp.add("vfr");
+		temp.add("fps=1/2");
+		temp.add(videoThumbPath);
 		
 		String[] res = new String[temp.size()];
 		for (int i = 0; i < temp.size(); i++)

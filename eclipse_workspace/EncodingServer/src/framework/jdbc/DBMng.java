@@ -943,7 +943,7 @@ public class DBMng {
 		StackTraceElement[] trace = new Throwable().getStackTrace();
 		
 		errors.add(sdf.format(date).toString()+
-				"\n   LineNo : "+trace[3].getLineNumber()+
+				"\n   LineNo : "+trace[2].getLineNumber()+
 				"\n   Method : "+trace[3].getMethodName()+
 				"\n   Reason : "+errMsg);
 	}

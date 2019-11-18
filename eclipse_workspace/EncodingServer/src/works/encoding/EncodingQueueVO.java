@@ -19,13 +19,14 @@ public class EncodingQueueVO {
 	private Date sDate;
 	private Date eDate;
 	private int assignedServerId;
+	private double ssim;
 	private String newDirectory;
 	private Date regdate;
 	
 	private SampleVideoVO video;
 	
 	public EncodingQueueVO(int seq, int fileId, String presetCode, String status, long eVolume,
-			Date sDate, Date eDate, int assignedServerId, String newDirectory, Date regdate) {
+			Date sDate, Date eDate, int assignedServerId, double ssim, String newDirectory, Date regdate) {
 		super();
 		this.seq = seq;
 		this.fileId = fileId;
@@ -35,6 +36,7 @@ public class EncodingQueueVO {
 		this.sDate = sDate;
 		this.eDate = eDate;
 		this.assignedServerId = assignedServerId;
+		this.ssim = ssim;
 		this.newDirectory = newDirectory;
 		this.regdate = regdate;
 	}
@@ -86,6 +88,12 @@ public class EncodingQueueVO {
 	}
 	public void setAssignedServerId(int assignedServerId) {
 		this.assignedServerId = assignedServerId;
+	}
+	public double getSsim() {
+		return ssim;
+	}
+	public void setSsim(double ssim) {
+		this.ssim = ssim;
 	}
 	public String getNewDirectory() {
 		return newDirectory;
