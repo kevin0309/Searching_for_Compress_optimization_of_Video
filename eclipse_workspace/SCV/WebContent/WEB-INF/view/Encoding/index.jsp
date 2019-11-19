@@ -27,6 +27,9 @@
 			<a href="/SCV/page/encoding/server-list">server list</a>
 		</li>
 		<li>
+			<a href="/SCV/page/encoding/finished-queue">finished encoding queue</a>
+		</li>
+		<li>
 			<a href="#">upload sample video</a>
 		</li>
 	</ol>
