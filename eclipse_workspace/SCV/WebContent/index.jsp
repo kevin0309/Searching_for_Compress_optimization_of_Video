@@ -15,7 +15,7 @@
 </head>
 <body>
 <div class="container">
-<h1 style="margin: 50px auto;">Searching for Compress optimization of Video</h1>
+<h1 style="margin: 30px auto;">Searching for Compress optimization of Video</h1>
 <div>
 	<h2>Current server info</h2>
 	<ul>

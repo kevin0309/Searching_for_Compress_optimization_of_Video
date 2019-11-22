@@ -87,7 +87,7 @@
 </head>
 <body>
 <div class="container">
-	<h2>Server list</h2>
+	<h1 style="margin: 30px auto;">Server list</h1>
 	
 	<div style="margin: 30px auto;">
 		<table id="server-list" class="table table-striped table-bordered table-hover table-sm">

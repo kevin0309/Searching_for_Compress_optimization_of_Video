@@ -227,8 +227,8 @@
   <!--   suppressSmap        Should the generation of SMAP info for JSR45   -->
   <!--                       debugging be suppressed?  [false]              -->
   <!--                                                                      -->
-  <!--   trimSpaces          Should white spaces in template text between   -->
-  <!--                       actions or directives be trimmed?  [false]     -->
+  <!--   trimSpaces          Should template text that consists entirely of -->
+  <!--                       whitespace be removed from the output? [false] -->
   <!--                                                                      -->
   <!--   xpoweredBy          Determines whether X-Powered-By response       -->
   <!--                       header is added by generated servlet.  [false] -->
@@ -333,6 +333,11 @@
   <!--                        If not set, then webAppRootDir is used.       -->
   <!--                        Recommended value: WEB-INF/cgi                -->
   <!--                                                                      -->
+  <!--   enableCmdLineArguments                                             -->
+  <!--                        Are command line parameters generated from    -->
+  <!--                        the query string as per section 4.4 of 3875   -->
+  <!--                        RFC? [true]                                  -->
+  <!--                                                                      -->
   <!--   executable           Name of the executable used to run the        -->
   <!--                        script. [perl]                                -->
   <!--                                                                      -->
@@ -344,6 +349,15 @@
   <!--                        pattern.                                      -->
   <!--                        [ACCEPT[-0-9A-Z]*|CACHE-CONTROL|COOKIE|HOST|  -->
   <!--                         IF-[-0-9A-Z]*|REFERER|USER-AGENT]            -->
+  <!--                                                                      -->
+  <!--  environment-variable- An environment to be set for the execution    -->
+  <!--                        environment of the CGI script. The name of    -->
+  <!--                        variable is taken from the parameter name.    -->
+  <!--                        To configure an environment variable named    -->
+  <!--                        FOO, configure a parameter named              -->
+  <!--                        environment-variable-FOO. The parameter value -->
+  <!--                        is used as the environment variable value.    -->
+  <!--                        The default is no environment variables.      -->
   <!--                                                                      -->
   <!--   parameterEncoding    Name of parameter encoding to be used with    -->
   <!--                        CGI servlet.                                  -->
@@ -2873,7 +2887,7 @@
     </mime-mapping>
     <mime-mapping>
         <extension>otf</extension>
-        <mime-type>application/x-font-otf</mime-type>
+        <mime-type>font/otf</mime-type>
     </mime-mapping>
     <mime-mapping>
         <!-- OpenDocument Drawing Template -->
@@ -3912,11 +3926,11 @@
     </mime-mapping>
     <mime-mapping>
         <extension>ttc</extension>
-        <mime-type>application/x-font-ttf</mime-type>
+        <mime-type>font/collection</mime-type>
     </mime-mapping>
     <mime-mapping>
         <extension>ttf</extension>
-        <mime-type>application/x-font-ttf</mime-type>
+        <mime-type>font/ttf</mime-type>
     </mime-mapping>
     <mime-mapping>
         <extension>ttl</extension>
@@ -4305,7 +4319,7 @@
     </mime-mapping>
     <mime-mapping>
         <extension>woff</extension>
-        <mime-type>application/x-font-woff</mime-type>
+        <mime-type>font/woff</mime-type>
     </mime-mapping>
     <mime-mapping>
         <extension>woff2</extension>
