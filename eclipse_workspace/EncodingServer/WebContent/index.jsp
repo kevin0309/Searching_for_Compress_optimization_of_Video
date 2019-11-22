@@ -12,6 +12,7 @@
 <script type="text/javascript" src="//code.jquery.com/jquery-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/EncodingServer/weblib/js/util.js"></script>
 <style type="text/css">
 	.card {
 		padding: 20px;
@@ -163,10 +164,15 @@
 			$tr.append('<td class="td-center">' + temp.fileId + '</td>');
 			$tr.append('<td class="td-center">' + temp.presetCode + '</td>');
 			$tr.append('<td class="td-center">' + temp.status + '</td>');
-			$tr.append('<td class="td-center">' + temp.endVolume + '</td>');
-			$tr.append('<td class="td-center">' + temp.startDate + '</td>');
-			$tr.append('<td class="td-center">' + temp.endDate + '</td>');
+			var vd;
+			if (temp.volumeDifference <= 0)
+				vd = $$.convertToVolumeStr(-temp.volumeDifference);
+			else
+				vd = '-' + $$.convertToVolumeStr(temp.volumeDifference);
+			$tr.append('<td class="td-center">' + vd + '</td>');
+			$tr.append('<td class="td-center">' + temp.elapsedTime/1000 + '초</td>')
 			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
+			$tr.append('<td class="td-center">' + temp.ssim + '</td>');
 			if (tempServer.status == 1 && temp.status == 'finished')
 				$tr.append('<td class="td-center"><a href="http://'+tempServer.addr+'/EncodingServer/download/encoded?id='+temp.seq+'">link</a></td>');
 			else
@@ -278,10 +284,10 @@
 				<th>파일 ID</th>
 				<th>프리셋 코드</th>
 				<th>현재상태</th>
-				<th>작업 후 용량</th>
-				<th>인코딩 시작 날짜</th>
-				<th>인코딩 종료 날짜</th>
+				<th>용량변화</th>
+				<th>소요시간</th>
 				<th>등록일자</th>
+				<th>SSIM</th>
 				<th>영상다운</th>
 				<th>로그다운</th>
 			</tr>

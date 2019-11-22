@@ -1,4 +1,4 @@
-package works;
+package works.encoding;
 
 /**
  * DB encoding_preset_option 테이블 대응 VO

@@ -25,6 +25,7 @@ import framework.util.GenerateFilePathFactory;
 import framework.util.LogUtil;
 import framework.util.windowsAppProcessing.WindowsAppProcessBuilder;
 import framework.util.windowsAppProcessing.WindowsAppProcessOptions;
+import works.imageExtract.ExtractKeyframeCommand;
 
 /**
  * 파일의 종류에따라 서로 다른 경로에 저장, 다른 기능을 수행하도록 분류하는 기능
@@ -148,6 +149,18 @@ public class ClassifyFileService {
 		uploadReqVO.setHeight((int)videoHeight);
 		uploadReqVO.setvCodec(videoCodec);
 		uploadReqVO.setaCodec(audioCodec);
+		
+		//extract key frames
+		String newThumbsPath = pathFactory.makeNewThumbPath(null);
+		ExtractKeyframeCommand cmd2 = new ExtractKeyframeCommand(newPath, newThumbsPath + "thumb%03d.jpg");
+		WindowsAppProcessBuilder wapb2 = new WindowsAppProcessBuilder(newThumbsPath+"log.txt");
+		LogUtil.printLog("Extract Thumbnail start, sample video target : " + newPath);
+		try {
+			if (wapb2.process(cmd2.generateCmdLine()))
+				LogUtil.printLog("Extract Thumbnail complete, sample video target : " + newThumbsPath);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		new SampleVideoDAO().insertNewSampleVideo(uploadReqVO);
 	}

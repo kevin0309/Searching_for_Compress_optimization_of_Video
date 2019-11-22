@@ -11,11 +11,11 @@ import org.json.simple.JSONAware;
 import framework.jdbc.DBMng;
 import framework.servlet.controller.handler.AjaxRequestHandler;
 
-public class TestAddEncodingQueue implements AjaxRequestHandler {
+public class TestAddEncodingQueue2 implements AjaxRequestHandler {
 
 	@Override
 	public String getURL() {
-		return "/process/test/addQueue";
+		return "/process/test/addQueue2";
 	}
 
 	@Override
@@ -26,32 +26,8 @@ public class TestAddEncodingQueue implements AjaxRequestHandler {
 		
 		if (pCode == null) {
 			db(fid, sid, "crf_18_ultrafast");
-			db(fid, sid, "crf_18_superfast");
-			db(fid, sid, "crf_18_veryfast");
-			db(fid, sid, "crf_18_faster");
-			db(fid, sid, "crf_18_fast");
-			db(fid, sid, "crf_18_medium");
 			db(fid, sid, "crf_18_slow");
-			db(fid, sid, "crf_21_ultrafast");
-			db(fid, sid, "crf_21_superfast");
-			db(fid, sid, "crf_21_veryfast");
-			db(fid, sid, "crf_21_faster");
-			db(fid, sid, "crf_21_fast");
-			db(fid, sid, "crf_21_medium");
-			db(fid, sid, "crf_21_slow");
-			db(fid, sid, "crf_24_ultrafast");
-			db(fid, sid, "crf_24_superfast");
-			db(fid, sid, "crf_24_veryfast");
-			db(fid, sid, "crf_24_faster");
-			db(fid, sid, "crf_24_fast");
-			db(fid, sid, "crf_24_medium");
-			db(fid, sid, "crf_24_slow");
 			db(fid, sid, "crf_27_ultrafast");
-			db(fid, sid, "crf_27_superfast");
-			db(fid, sid, "crf_27_veryfast");
-			db(fid, sid, "crf_27_faster");
-			db(fid, sid, "crf_27_fast");
-			db(fid, sid, "crf_27_medium");
 			db(fid, sid, "crf_27_slow");
 		}
 		else

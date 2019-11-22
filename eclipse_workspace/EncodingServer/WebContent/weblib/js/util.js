@@ -8,6 +8,23 @@ var $$ = {
 		document.body.removeChild(t);
 		toastr["info"]('클립보드에 복사되었습니다.');
 	},
+	convertToVolumeStr: function(fileVolume) {
+		var sizeStr;
+		var temp = fileVolume;
+		if (temp < 1024)
+			sizeStr = Math.round(temp*100)/100.0+' Byte';
+		else if ((temp /= 1024) < 1024)
+			sizeStr = Math.round(temp*100)/100.0+' KB';
+		else if ((temp /= 1024) < 1024)
+			sizeStr = Math.round(temp*100)/100.0+' MB';
+		else if ((temp /= 1024) < 1024)
+			sizeStr = Math.round(temp*100)/100.0+' GB';
+		else if ((temp /= 1024) < 1024)
+			sizeStr = Math.round(temp*100)/100.0+' TB';
+		else if ((temp /= 1024) < 1024)
+			sizeStr = Math.round(temp*100)/100.0+' PB';
+		return sizeStr;
+	},
 	/**
 	 * 브라우저 환경에 따라 함수를 실행시킨다.<br>
 	 * 실핼시킬 함수는 funcObj에 지정한다.
