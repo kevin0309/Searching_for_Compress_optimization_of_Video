@@ -19,7 +19,7 @@
   	<context-param>
 		<param-name>initConfig</param-name>
 		<param-value>
-			fileDestination=/WEB-INF/initConfig-dev-yh.properties
+			fileDestination=/WEB-INF/initConfig-server.properties
   		</param-value>
   	</context-param>
 </web-app>

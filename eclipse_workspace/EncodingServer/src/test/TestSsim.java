@@ -10,7 +10,6 @@ import org.json.simple.JSONAware;
 
 import framework.jdbc.DBMng;
 import framework.servlet.controller.handler.AjaxRequestHandler;
-import framework.util.FileUtil;
 import works.ssim.SsimCalculator;
 
 public class TestSsim implements AjaxRequestHandler {

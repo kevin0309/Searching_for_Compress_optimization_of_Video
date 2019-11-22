@@ -15,7 +15,6 @@ import encoding.vo.EncodingQueueVO;
 import encoding.vo.SampleVideoVO;
 import framework.servlet.controller.handler.AjaxRequestHandler;
 import framework.util.DateUtil;
-import framework.util.LogUtil;
 
 public class GetEncodingQueueListAction implements AjaxRequestHandler {
 

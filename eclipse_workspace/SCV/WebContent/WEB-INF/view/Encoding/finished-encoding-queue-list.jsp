@@ -154,7 +154,6 @@
 					});
 				}
 				chart.data = _this.chartData;
-				chart.reinit();
 			});
 		}
 	}
@@ -170,7 +169,7 @@
 		
 		// Increase contrast by taking evey second color
 		chart.colors.step = 2;
-		
+		chart.sequencedInterpolationDelay = 1000;
 		// Create axes
 		var categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
 		categoryAxis.dataFields.category = 'preset';
@@ -289,7 +288,7 @@
 <nav>
 	<div class="nav nav-tabs" role="tablist">
 		<a id="queue-list-table-tab" class="nav-item nav-link active" data-toggle="tab" href="#queue-list-table" role="tab" aria-controls="queue-list-table" aria-selected="true">인코딩 큐 목록</a>
-		<a id="result-chart-tab" class="nav-item nav-link" data-toggle="tab" href="#result-chart" role="tab" aria-controls="result-chart" aria-selected="false">결과 차트</a>
+		<a id="result-chart-tab" class="nav-item nav-link" data-toggle="tab" href="#result-chart" role="tab" aria-controls="result-chart" aria-selected="false" onclick="setTimeout(function() {chart.reinit()}, 100)">결과 차트</a>
 	</div>
 </nav>
 
