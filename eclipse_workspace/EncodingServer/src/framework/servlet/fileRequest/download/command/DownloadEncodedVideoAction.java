@@ -80,6 +80,9 @@ public class DownloadEncodedVideoAction implements FileDownloadHandler {
 			resp.setContentType("application/octet-stream");
 		else
 			resp.setContentType(mimeType);
+
+		//용량 지정
+		resp.addHeader("Content-Length", Long.toString(file.length()));
 		
 		//브라우저 별 Content-Disposition 지정
 		String browserType = getBrowserType(req);

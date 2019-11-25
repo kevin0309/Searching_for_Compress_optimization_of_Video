@@ -92,13 +92,11 @@ public class FileDownloadController extends HttpServlet{
 		else {
 			try {
 				File file = handler.process(req, resp);
-				//용량 지정
-				resp.addHeader("Content-Length", Long.toString(file.length()));
 
-				//resp.setHeader("Content-Transfer-Encoding", "binary;");
-				//resp.setHeader("Pragma", "no-cache;"); //http1.0
-				//resp.setDateHeader("Expires", 0);
-				//resp.setHeader ( "Cache-Control", "no-cache" ); //http1.1
+				resp.setHeader("Content-Transfer-Encoding", "binary;");
+				resp.setHeader("Pragma", "no-cache;"); //http1.0
+				resp.setDateHeader("Expires", 0);
+				resp.setHeader ( "Cache-Control", "no-cache" ); //http1.1
 				
 				LogUtil.printLog(req.getRemoteAddr(), "downloaded file : " + file.getName());
 			} catch (ClientAbortException e) {

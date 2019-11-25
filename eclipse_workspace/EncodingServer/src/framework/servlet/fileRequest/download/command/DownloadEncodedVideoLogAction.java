@@ -85,6 +85,9 @@ public class DownloadEncodedVideoLogAction implements FileDownloadHandler {
 		
 		//마임타임 지정
 		resp.setContentType("text/plain");
+
+		//용량 지정
+		resp.addHeader("Content-Length", Long.toString(file.length()));
 		
 		//브라우저 별 Content-Disposition 지정
 		String browserType = getBrowserType(req);

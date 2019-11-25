@@ -40,8 +40,11 @@ public class GetEncodingQueueListAction implements AjaxRequestHandler {
 			String indexesParam = req.getParameter("data");
 			String[] indexes = indexesParam.split(",");
 			eqList = new ArrayList<>();
-			for (int i = 0; i < indexes.length; i++)
-				eqList.add(dao.getEncodingQueue(Integer.parseInt(indexes[i])));
+			for (int i = 0; i < indexes.length; i++) {
+				EncodingQueueVO tempQueue = dao.getEncodingQueue(Integer.parseInt(indexes[i]));
+				if (tempQueue != null)
+					eqList.add(tempQueue);
+			}
 		}
 		
 		//비디오 리스트 조회

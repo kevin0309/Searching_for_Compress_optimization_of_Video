@@ -9,6 +9,8 @@
 <title>Server list</title>
 <link rel="stylesheet" type="text/css" href="/SCV/weblib/css/axicon/axicon.min.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="http://welcome.blog-yh.kr/EncodingServer/weblib/js/toast-master/toastr.min.css" />
+<link rel="stylesheet" type="text/css" href="http://welcome.blog-yh.kr/EncodingServer/weblib/css/util.css" />
 <script type="text/javascript" src="//code.jquery.com/jquery-latest.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
@@ -18,6 +20,7 @@
 <script src="https://www.amcharts.com/lib/4/lang/de_DE.js"></script>
 <script src="https://www.amcharts.com/lib/4/geodata/germanyLow.js"></script>
 <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+<script type="text/javascript" src="http://welcome.blog-yh.kr/EncodingServer/weblib/js/toast-master/toastr.min.js"></script>
 <script type="text/javascript" src="http://welcome.blog-yh.kr/EncodingServer/weblib/js/util.js"></script>
 <style type="text/css">
 	.table.table-sm td, .table.table-sm th {
@@ -30,6 +33,13 @@
 	
 	.table.table-sm .td-center {
 		text-align: center;
+	}
+	
+	.sample-video-area {
+		display: inline-block;
+		width: 49%;
+		text-align: center;
+		padding-top: 0.4rem;
 	}
 </style>
 <script type="text/javascript">
@@ -195,11 +205,15 @@
 		queueIndexList : new Set(),
 		chartData : [],
 		check : function(dom) {
-			if ($(dom).prop('checked'))
-				this.queueIndexList.add(Number($(dom).parent().parent().find('td:eq(1)').text()));
-			else
-				this.queueIndexList.delete(Number($(dom).parent().parent().find('td:eq(1)').text()));
-			console.log(this.queueIndexList);
+			var tempIndex = Number($(dom).parent().parent().find('td:eq(1)').text());
+			if ($(dom).prop('checked')) {
+				this.queueIndexList.add(tempIndex);
+				toastr["success"](tempIndex + ' - 결과차트에 추가');
+			}
+			else {
+				this.queueIndexList.delete(tempIndex);
+				toastr["warning"](tempIndex + ' - 결과차트에서 제외');
+			}
 			this.getEntries();
 		},
 		getEntries : function() {
@@ -208,7 +222,6 @@
 			param.data = this.queueIndexList.toJSON().toString();
 			this.chartData = [];
 			$.post('/SCV/process/getEncodingQueue', param, function (json) {
-				console.log(json);
 				var queueList = json.resultData.encodingQueueList;
 				for (var i in queueList) {
 					_this.chartData.push({
@@ -344,9 +357,83 @@
 		// Add cursor
 		chart.cursor = new am4charts.XYCursor();
 	}
+	
+	var videoController = {
+			muted: false,
+			play: function() {
+				$('#sample-video-first video').get(0).play();
+				$('#sample-video-second video').get(0).play();
+			},
+			pause: function() {
+				$('#sample-video-first video').get(0).pause();
+				$('#sample-video-second video').get(0).pause();
+			},
+			reload: function() {
+				var input1 = $('#sample-video-first input').val();
+				var input2 = $('#sample-video-second input').val();
+				var param = {};
+				param.data = input1+','+input2;
+				var valFlag;
+				if (input1 == '0' && input2 == '0')
+					valFlag = 0;
+				else if (input1 != '0' && input2 == '0')
+					valFlag = 1;
+				else if (input1 == '0' && input2 != '0')
+					valFlag = 2;
+				else
+					valFlag = 3;
+				$.post('/SCV/process/getEncodingQueue', param, function (json) {
+					var queueList = json.resultData.encodingQueueList;
+					var hostName1;
+					var hostName2;
+					if (valFlag == 0)
+						return;
+					else if (valFlag == 1) {
+						for (var j in serverList.list)
+							if (serverList.list[j].seq == queueList[0].assignedServerId)
+								hostName1 = serverList.list[j].addr;
+						$('#sample-video-first video').get(0).src = 'http://' + hostName1 + '/EncodingServer/download/stream?id=' + $('#sample-video-first input').val();
+						$('#sample-video-first video').get(0).load();
+					}
+					else if (valFlag == 2) {
+						for (var j in serverList.list)
+							if (serverList.list[j].seq == queueList[0].assignedServerId)
+								hostName2 = serverList.list[j].addr;
+						$('#sample-video-second video').get(0).src = 'http://' + hostName2 + '/EncodingServer/download/encoded?id=' + $('#sample-video-second input').val();
+						$('#sample-video-second video').get(0).load();
+					}
+					else {
+						for (var j in serverList.list)
+							if (serverList.list[j].seq == queueList[0].assignedServerId)
+								hostName1 = serverList.list[j].addr;
+						for (var j in serverList.list)
+							if (serverList.list[j].seq == queueList[1].assignedServerId)
+								hostName2 = serverList.list[j].addr;
+						$('#sample-video-first video').get(0).src = 'http://' + hostName1 + '/EncodingServer/download/encoded?id=' + $('#sample-video-first input').val();
+						$('#sample-video-first video').get(0).load();
+						$('#sample-video-second video').get(0).src = 'http://' + hostName2 + '/EncodingServer/download/encoded?id=' + $('#sample-video-second input').val();
+						$('#sample-video-second video').get(0).load();
+					}
+				});
+			},
+			mute: function() {
+				if (this.muted) {
+					$('#video-mute-btn i').attr('class', 'axi axi-mute');
+					$('#sample-video-first video').get(0).muted = false;
+					$('#sample-video-second video').get(0).muted = false;
+					this.muted = false;
+				}
+				else {
+					$('#video-mute-btn i').attr('class', 'axi axi-volume-mute');
+					$('#sample-video-first video').get(0).muted = true;
+					$('#sample-video-second video').get(0).muted = true;
+					this.muted = true;
+				}
+			}
+	}
 </script>
 </head>
-<body>
+<body style="overflow-x: scroll;">
 <div class="container-fluid">
 <h2 style="margin: 30px auto;">Searching for Compress optimization of Video - Management <span style="font-size: medium;">version : <%=ServerConfig.getProjectVersion() %></span></h2>
 <nav>
@@ -355,6 +442,7 @@
 		<a id="sample-video-list-table-tab" class="nav-item nav-link" data-toggle="tab" href="#sample-video-list-table" role="tab" aria-controls="sample-video-list-table" aria-selected="true">샘플 비디오 목록</a>
 		<a id="queue-list-table-tab" class="nav-item nav-link" data-toggle="tab" href="#queue-list-table" role="tab" aria-controls="queue-list-table" aria-selected="true">인코딩 큐 목록</a>
 		<a id="result-chart-tab" class="nav-item nav-link" data-toggle="tab" href="#result-chart" role="tab" aria-controls="result-chart" aria-selected="false" onclick="setTimeout(function() {chart.reinit()}, 100)">결과 차트</a>
+		<a id="play-result-video-tab" class="nav-item nav-link" data-toggle="tab" href="#play-result-video" role="tab" aria-controls="play-result-video" aria-selected="true" onclick="videoController.reload()">결과 비디오 재생</a>
 	</div>
 </nav>
 
@@ -401,11 +489,11 @@
 						<th>용량</th>
 						<th>비디오 코덱</th>
 						<th>오디오 코덱</th>
-						<th>비디오 너비</th>
-						<th>비디오 높이</th>
+						<th>너비</th>
+						<th>높이</th>
 						<th>저장서버</th>
 						<th>등록일자</th>
-						<th>영상다운</th>
+						<th>다운</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -459,8 +547,29 @@
 			</table>
 		</div>
 	</div>
-	<div id="result-chart" class="tab-pane fade" role="tabpanel" aria-labelledby="result-chart-tab" style="width: 100%;">
+	<div id="result-chart" class="tab-pane fade" role="tabpanel" aria-labelledby="result-chart-tab">
 		<div id="chartdiv" style="height: calc(100vh - 150px);"></div>
+	</div>
+	<div id="play-result-video" class="tab-pane fade" role="tabpanel" aria-labelledby="play-result-video">
+		<div>
+			<div class="sample-video-area" id="sample-video-first">
+				<h5>Sample video 1 seq : <input type="number" value="0" style="width: 5rem;"></h5>
+				<video preload="none" style="width: 100%;" controls="controls"></video>
+			</div>
+			<div class="sample-video-area" id="sample-video-second">
+				<h5>Sample video 2 seq : <input type="number" value="0" style="width: 5rem;"></h5>
+				<video preload="none" muted="muted" style="width: 100%;" controls="controls"></video>
+			</div>
+			<hr style="margin-top: 0.2rem;">
+		</div>
+		<div class="video-controller" style="text-align: center;">
+			<div class="btn-group">
+				<button class="btn btn-outline-dark btn-lg" id="video-play-btn" onclick="videoController.play()" title="재생"><i class="axi axi-play2"></i></button>
+				<button class="btn btn-outline-dark btn-lg" id="video-pause-btn" onclick="videoController.pause()" title="일시정지"><i class="axi axi-pause3"></i></button>
+				<button class="btn btn-outline-dark btn-lg" id="video-reload-btn" onclick="videoController.reload()" title="리로드"><i class="axi axi-reload"></i></button>
+				<button class="btn btn-outline-dark btn-lg" id="video-mute-btn" onclick="videoController.mute()" title="음소거"><i class="axi axi-mute"></i></button>
+			</div>
+		</div>
 	</div>
 </div>
 </div>
