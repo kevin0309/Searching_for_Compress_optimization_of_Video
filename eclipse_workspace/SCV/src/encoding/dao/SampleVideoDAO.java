@@ -51,7 +51,7 @@ public class SampleVideoDAO {
 		
 		try {
 			db = new DBMng();
-			db.setQuery("select * from sample_video where order by seq desc limit ?, ?");
+			db.setQuery("select * from sample_video order by seq desc limit ?, ?");
 			db.setInt(offset);
 			db.setInt(amount);
 			db.execute();
