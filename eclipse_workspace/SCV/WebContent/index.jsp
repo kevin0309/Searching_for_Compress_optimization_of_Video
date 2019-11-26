@@ -113,13 +113,15 @@
 		
 		for (var i in resPresetList) {
 			var temp = resPresetList[i];
-			var $tr = $('<tr></tr>');
+			var $tr = $('<tr onclick=""></tr>');
 			$tr.append('<td>' + temp.code + '</td>');
 			$tr.append('<td>' + temp.name + '</td>');
 			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
 			$('#server-list tbody').append($tr);
 		}
 	});
+	
+	presetList.
 	
 	var sampleVideoList = new makeList(10, '/SCV/process/getSampleVideoList', function(resultJSON) {
 		var resEnt = resultJSON.resultData.result_entries;

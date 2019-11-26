@@ -48,4 +48,25 @@ public class EncodingPresetDAO {
 			db.close();
 		}
 	}
+	
+	public int getTotalRowCnt() {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("select count(1) cnt from encoding_preset");
+			db.execute();
+			
+			if (db.next()) {
+				return db.getInt("cnt");
+			}
+		} catch (SQLException e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+		return -1;
+	}
+	
 }

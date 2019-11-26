@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 import encoding.dao.EncodingPresetDAO;
 import encoding.vo.EncodingPresetOptionVO;
 import encoding.vo.EncodingPresetVO;
-import encoding.vo.EncodingServerVO;
 import framework.servlet.controller.handler.AjaxRequestHandler;
 import framework.util.DateUtil;
 
@@ -53,8 +52,6 @@ public class GetEncodingPresetListAction implements AjaxRequestHandler {
 		res.put("serverList", presetList2);
 		
 		JSONObject entries = new JSONObject();
-		entries.put("offset", offset);
-		entries.put("amount", amount);
 		entries.put("total", dao.getTotalRowCnt());
 		res.put("result_entries", entries);
 		
