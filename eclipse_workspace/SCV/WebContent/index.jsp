@@ -45,6 +45,7 @@
 <script type="text/javascript">
 	$('document').ready(function() {
 		serverList.refresh();
+		presetList.refresh();
 		initChart();
 	});
 
@@ -101,6 +102,23 @@
 		}
 		sampleVideoList.refresh();
 		encodingQueueList.refresh();
+	});
+	
+	var presetList = new makeList(10, '/SCV/process/getPresetList', function(resultJSON) {
+		var resEnt = resultJSON.resultData.result_entries;
+		var resPresetList = resultJSON.resultData.presetList;
+		$('#preset-list tbody').empty();
+		presetList.total = resEnt.total;
+		presetList.list = resPresetList;
+		
+		for (var i in resPresetList) {
+			var temp = resPresetList[i];
+			var $tr = $('<tr></tr>');
+			$tr.append('<td>' + temp.code + '</td>');
+			$tr.append('<td>' + temp.name + '</td>');
+			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
+			$('#server-list tbody').append($tr);
+		}
 	});
 	
 	var sampleVideoList = new makeList(10, '/SCV/process/getSampleVideoList', function(resultJSON) {
@@ -225,7 +243,7 @@
 				var queueList = json.resultData.encodingQueueList;
 				for (var i in queueList) {
 					_this.chartData.push({
-						preset : queueList[i].presetCode,
+						preset : queueList[i].seq + '-' + queueList[i].presetCode,
 						duration : queueList[i].elapsedTime/1000,
 						volumeDiff : -queueList[i].volumeDifference,
 						ssim : queueList[i].ssim
@@ -440,7 +458,9 @@
 	<div class="nav nav-tabs" role="tablist">
 		<a id="server-list-table-tab" class="nav-item nav-link active" data-toggle="tab" href="#server-list-table" role="tab" aria-controls="server-list-table" aria-selected="true">인코딩 서버 목록</a>
 		<a id="sample-video-list-table-tab" class="nav-item nav-link" data-toggle="tab" href="#sample-video-list-table" role="tab" aria-controls="sample-video-list-table" aria-selected="true">샘플 비디오 목록</a>
+		<a id="encoding-preset-list-tab" class="nav-item nav-link" data-toggle="tab" href="#encoding-preset-list" role="tab" aria-controls="encoding-preset-list" aria-selected="true">인코딩 옵션 관리</a>
 		<a id="queue-list-table-tab" class="nav-item nav-link" data-toggle="tab" href="#queue-list-table" role="tab" aria-controls="queue-list-table" aria-selected="true">인코딩 큐 목록</a>
+		<a id="add-queue-tab" class="nav-item nav-link" data-toggle="tab" href="#add-queue" role="tab" aria-controls="add-queue" aria-selected="true">인코딩 큐 추가</a>
 		<a id="result-chart-tab" class="nav-item nav-link" data-toggle="tab" href="#result-chart" role="tab" aria-controls="result-chart" aria-selected="false" onclick="setTimeout(function() {chart.reinit()}, 100)">결과 차트</a>
 		<a id="play-result-video-tab" class="nav-item nav-link" data-toggle="tab" href="#play-result-video" role="tab" aria-controls="play-result-video" aria-selected="true" onclick="videoController.reload()">결과 비디오 재생</a>
 	</div>
@@ -513,6 +533,35 @@
 			</table>
 		</div>
 	</div>
+	<div id="encoding-preset-list" class="tab-pane fade" role="tabpanel" aria-labelledby="encoding-preset-list-tab">
+		<div style="display: inline-block; min-height: 50vh; background: #f00; width: 400px;">
+			<table id="preset-list" class="table table-striped table-bordered table-hover table-sm">
+				<thead class="thead-dark">
+					<tr>
+						<th>코드</th>
+						<th>이름</th>
+						<th>작성일</th>
+					</tr>
+				</thead>
+				<tbody>
+				
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="10">
+							<div style="text-align: center;">
+								<button onclick="encodingQueueList.prevPage()" class="btn btn-outline-dark btn-sm">prev</button>
+								<button onclick="encodingQueueList.refresh()" class="btn btn-outline-dark btn-sm">refresh</button>
+								<button onclick="encodingQueueList.nextPage()" class="btn btn-outline-dark btn-sm">next</button>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+		<div style="display: inline-block; min-height: 50vh; background: #0f0; width: calc(100vw - 452px);"></div>
+		<div style="min-height: 50vh; background: #00f;"></div>
+	</div>
 	<div id="queue-list-table" class="tab-pane fade show" role="tabpanel" aria-labelledby="queue-list-table-tab">
 		<div style="margin: 30px auto;">
 			<table id="encoded-video-list" class="table table-striped table-bordered table-hover table-sm">
@@ -546,6 +595,9 @@
 				</tfoot>
 			</table>
 		</div>
+	</div>
+	<div id="add-queue" class="tab-pane fade" role="tabpanel" aria-labelledby="add-queue-tab">
+		add queue
 	</div>
 	<div id="result-chart" class="tab-pane fade" role="tabpanel" aria-labelledby="result-chart-tab">
 		<div id="chartdiv" style="height: calc(100vh - 150px);"></div>
