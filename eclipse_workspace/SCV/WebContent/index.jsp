@@ -113,15 +113,74 @@
 		
 		for (var i in resPresetList) {
 			var temp = resPresetList[i];
-			var $tr = $('<tr onclick=""></tr>');
+			var $tr = $('<tr onclick="presetList.choose('+i+')" style="cursor: pointer;"></tr>');
 			$tr.append('<td>' + temp.code + '</td>');
 			$tr.append('<td>' + temp.name + '</td>');
-			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
-			$('#server-list tbody').append($tr);
+			//$tr.append('<td class="td-center">' + temp.regdate + '</td>');
+			$('#preset-list tbody').append($tr);
 		}
 	});
 	
-	presetList.
+	presetList.choose = function(index) {
+		$('#preset-option-list tbody').empty();
+		var presetOptList = presetList.list[index].opts;
+		modPreset.cur = presetList.list[index];
+		modPreset.curIndex = index;
+		for (var i in presetOptList) {
+			var temp = presetOptList[i];
+			var $tr = $('<tr></tr>');
+			$tr.append('<td><input type="text" name="option-name-'+i+'" value="' + (temp.optionName==null?'':temp.optionName) + '" style="width: 100%"></td>');
+			$tr.append('<td><input type="text" name="option-value-'+i+'" value="' + (temp.optionValue==null?'':temp.optionValue) + '" style="width: 100%"></td>');
+			$tr.append('<td class="td-center"><i class="axi axi-expand-less" style="cursor: pointer;" title="순서 앞으로" onclick="modPreset.up('+i+')"></i><span style="cursor: default;"> | </span><i class="axi axi-expand-more" style="cursor: pointer;" title="순서 뒤로" onclick="modPreset.down('+i+')"></i><span style="cursor: default;"> | </span><i class="axi axi-delete2" style="cursor: pointer;" title="삭제" onclick="modPreset.del('+i+')"></i></td>');
+			//$tr.append('<td class="td-center">' + temp.regdate + '</td>');
+			$('#preset-option-list tbody').append($tr);
+		}
+	};
+	
+	var modPreset = {
+			cur: null,
+			curIndex: -1,
+			up: function(index) {
+				if (this.cur == null)
+					return;
+				if (index == 0)
+					return;
+				var temp = this.cur.opts[index];
+				this.cur.opts[index] = this.cur.opts[index - 1];
+				this.cur.opts[index - 1] = temp;
+				presetList.choose(this.curIndex);
+			},
+			down: function(index) {
+				if (this.cur == null)
+					return;
+				if (index == this.cur.opts.length-1)
+					return;
+				var temp = this.cur.opts[index];
+				this.cur.opts[index] = this.cur.opts[index + 1];
+				this.cur.opts[index + 1] = temp;
+				presetList.choose(this.curIndex);
+			},
+			add: function() {
+				if (this.cur == null)
+					return;
+				this.cur.opts.push({optionName: null, optionValue: null});
+				presetList.choose(this.curIndex);
+			},
+			del: function(index) {
+				if (this.cur == null)
+					return;
+				this.cur.opts.splice(index, 1);
+				presetList.choose(this.curIndex);
+			},
+			save: function() {
+				if (this.cur == null)
+					return;
+				console.log(this.cur);
+			},
+			addNewPreset: function() {
+				
+			}
+	}
 	
 	var sampleVideoList = new makeList(10, '/SCV/process/getSampleVideoList', function(resultJSON) {
 		var resEnt = resultJSON.resultData.result_entries;
@@ -536,33 +595,51 @@
 		</div>
 	</div>
 	<div id="encoding-preset-list" class="tab-pane fade" role="tabpanel" aria-labelledby="encoding-preset-list-tab">
-		<div style="display: inline-block; min-height: 50vh; background: #f00; width: 400px;">
+		<div style="display: inline-block; height: 700px; width: 400px; overflow-y: scroll;">
 			<table id="preset-list" class="table table-striped table-bordered table-hover table-sm">
 				<thead class="thead-dark">
 					<tr>
 						<th>코드</th>
-						<th>이름</th>
-						<th>작성일</th>
+						<th>설명</th>
 					</tr>
 				</thead>
 				<tbody>
 				
 				</tbody>
+			</table>
+		</div>
+		<div style="display: inline-block; height: 700px; width: calc(100vw - 452px); overflow-y: scroll;">
+			<table id="preset-option-list" class="table table-striped table-bordered table-hover table-sm">
+				<thead class="thead-dark">
+					<tr>
+						<th>옵션명</th>
+						<th>옵션값</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="3" class="td-center">
+							좌측에서 프리셋을 선택해주세요.
+						</td>
+					</tr>
+				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="10">
-							<div style="text-align: center;">
-								<button onclick="encodingQueueList.prevPage()" class="btn btn-outline-dark btn-sm">prev</button>
-								<button onclick="encodingQueueList.refresh()" class="btn btn-outline-dark btn-sm">refresh</button>
-								<button onclick="encodingQueueList.nextPage()" class="btn btn-outline-dark btn-sm">next</button>
+						<td colspan="12">
+							<div style="text-align: right;">
+								<button onclick="modPreset.add()" class="btn btn-outline-dark btn-sm">옵션요소 추가</button>
+								<button onclick="modPreset.save()" class="btn btn-outline-dark btn-sm">저장</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							</div>
 						</td>
 					</tr>
 				</tfoot>
 			</table>
+			<div>
+				프리셋 코드 <input name="preset-option-list_code" disabled="disabled"> 설명 <input name="preset-option-list_code">
+				<button onclick="modPreset.addNewPreset()" class="btn btn-outline-dark btn-sm">새로운 프리셋 작성</button>
+			</div>
 		</div>
-		<div style="display: inline-block; min-height: 50vh; background: #0f0; width: calc(100vw - 452px);"></div>
-		<div style="min-height: 50vh; background: #00f;"></div>
 	</div>
 	<div id="queue-list-table" class="tab-pane fade show" role="tabpanel" aria-labelledby="queue-list-table-tab">
 		<div style="margin: 30px auto;">

@@ -30,7 +30,7 @@ public class EncodingPresetDAO {
 					db2.execute();
 					
 					while (db2.next())
-						tempArr.add(new EncodingPresetOptionVO(db2.getInt("seq"), db2.getString("preset_code"), db2.getString("option_name"), db2.getString("optionValue"), db2.getInt("orderby"), db2.getDate("regdate")));
+						tempArr.add(new EncodingPresetOptionVO(db2.getInt("seq"), db2.getString("preset_code"), db2.getString("option_name"), db2.getString("option_value"), db2.getInt("orderby"), db2.getDate("regdate")));
 				} catch (SQLException e) {
 					LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
 					throw new RuntimeException(e);
