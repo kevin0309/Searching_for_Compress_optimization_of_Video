@@ -1,4 +1,4 @@
-package encoding.vo;
+package sampleVideo.vo;
 
 import java.util.Date;
 

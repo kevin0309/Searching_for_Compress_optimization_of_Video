@@ -45,6 +45,7 @@
 <script type="text/javascript">
 	$('document').ready(function() {
 		serverList.refresh();
+		presetList.refresh();
 		initChart();
 	});
 
@@ -103,6 +104,135 @@
 		encodingQueueList.refresh();
 	});
 	
+	var presetList = new makeList(10, '/SCV/process/getPresetList', function(resultJSON) {
+		var resEnt = resultJSON.resultData.result_entries;
+		var resPresetList = resultJSON.resultData.presetList;
+		$('#preset-list tbody').empty();
+		$('#preset-data-list').empty();
+		presetList.total = resEnt.total;
+		presetList.list = resPresetList;
+		
+		
+		
+		for (var i in resPresetList) {
+			var temp = resPresetList[i];
+			var $tr = $('<tr onclick="presetList.choose('+i+')" style="cursor: pointer;"></tr>');
+			$tr.append('<td>' + temp.code + '</td>');
+			$tr.append('<td>' + temp.name + '</td>');
+			//$tr.append('<td class="td-center">' + temp.regdate + '</td>');
+			$('#preset-list tbody').append($tr);
+			
+			$('#preset-data-list').append('<option value="'+temp.code+'">'+temp.name+'</option>');
+		}
+	});
+	
+	presetList.choose = function(index) {
+		$('#preset-option-list tbody').empty();
+		var presetOptList = presetList.list[index].opts;
+		modPreset.cur = presetList.list[index];
+		modPreset.curIndex = index;
+		for (var i in presetOptList) {
+			var temp = presetOptList[i];
+			var $tr = $('<tr></tr>');
+			$tr.append('<td><input type="text" name="option-name-'+i+'" value="' + (temp.optionName==null?'':temp.optionName) + '" style="width: 100%"></td>');
+			$tr.append('<td><input type="text" name="option-value-'+i+'" value="' + (temp.optionValue==null?'':temp.optionValue) + '" style="width: 100%"></td>');
+			$tr.append('<td class="td-center"><i class="axi axi-expand-less" style="cursor: pointer;" title="순서 앞으로" onclick="modPreset.up('+i+')"></i><span style="cursor: default;"> | </span><i class="axi axi-expand-more" style="cursor: pointer;" title="순서 뒤로" onclick="modPreset.down('+i+')"></i><span style="cursor: default;"> | </span><i class="axi axi-delete2" style="cursor: pointer;" title="삭제" onclick="modPreset.del('+i+')"></i></td>');
+			//$tr.append('<td class="td-center">' + temp.regdate + '</td>');
+			$('#preset-option-list tbody').append($tr);
+		}
+	};
+	
+	var modPreset = {
+			cur: null,
+			curIndex: -1,
+			up: function(index) {
+				if (this.cur == null)
+					return;
+				if (index == 0)
+					return;
+				var temp = this.cur.opts[index];
+				this.cur.opts[index] = this.cur.opts[index - 1];
+				this.cur.opts[index - 1] = temp;
+				presetList.choose(this.curIndex);
+			},
+			down: function(index) {
+				if (this.cur == null)
+					return;
+				if (index == this.cur.opts.length-1)
+					return;
+				var temp = this.cur.opts[index];
+				this.cur.opts[index] = this.cur.opts[index + 1];
+				this.cur.opts[index + 1] = temp;
+				presetList.choose(this.curIndex);
+			},
+			add: function() {
+				if (this.cur == null)
+					return;
+				this.cur.opts.push({optionName: null, optionValue: null});
+				this.save();
+				presetList.choose(this.curIndex);
+			},
+			del: function(index) {
+				if (this.cur == null)
+					return;
+				this.cur.opts.splice(index, 1);
+				presetList.choose(this.curIndex);
+			},
+			save: function() {
+				if (this.cur == null)
+					return;
+				var _this = this;
+				var index = 0;
+				$('#preset-option-list tbody>tr').each(function() {
+					var optName = $(this).find('td:eq(0) input').val();
+					if (optName == '')
+						optName = null;
+					_this.cur.opts[index].optionName = optName;
+					var optDesc = $(this).find('td:eq(1) input').val();
+					if (optDesc == '')
+						optDesc = null;
+					_this.cur.opts[index++].optionValue = optDesc;
+				});
+			},
+			commit: function() {
+				if (this.cur == null)
+					return;
+				
+				this.save();
+				for (var i = this.cur.opts.length - 1; i > -1; i--) {
+					if (this.cur.opts[i].optionName == null)
+						this.cur.opts.splice(i, 1);
+				}
+
+				var param = {};
+				param.presetCode = this.cur.code;
+				param.data = [];
+				for (var i in this.cur.opts) {
+					var temp = {};
+					temp.optionName = this.cur.opts[i].optionName;
+					temp.optionValue = this.cur.opts[i].optionValue;
+					temp.orderby = i;
+					param.data.push(temp);
+				}
+				param.data = JSON.stringify(param.data);
+				
+				$.post('/SCV/process/updatePresetOptions', param, function(json) {
+					presetList.choose(modPreset.curIndex);
+					toastr["success"](param.presetCode + ' - 성공적으로 업데이트 되었습니다.');
+				});
+			},
+			addNewPreset: function() {
+				var param = {};
+				param.presetCode = $('input[name=preset-option-list_code]').val();
+				param.desc = $('input[name=preset-option-list_desc]').val();
+				
+				$.post('/SCV/process/insertPreset', param, function() {
+					presetList.refresh();
+					toastr["success"](param.presetCode + ' - 성공적으로 추가되었습니다.');
+				});
+			}
+	}
+	
 	var sampleVideoList = new makeList(10, '/SCV/process/getSampleVideoList', function(resultJSON) {
 		var resEnt = resultJSON.resultData.result_entries;
 		var resFileList = resultJSON.resultData.fileList;
@@ -138,11 +268,11 @@
 			$tr.append('<td class="td-center">' + temp.width + '</td>');
 			$tr.append('<td class="td-center">' + temp.height + '</td>');
 			$tr.append('<td class="td-center">' + temp.storedServerId + '</td>');
-			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
 			if (tempServer.status == 1)
 				$tr.append('<td class="td-center"><a href="http://'+tempServer.addr+'/EncodingServer/download/original?id='+temp.seq+'">link</a></td>');
 			else
 				$tr.append('<td class="td-center" style="color: #aaa;">link</td>');
+			$tr.append('<td class="td-center"><input type="text" list="preset-data-list"> <button onclick="encodingQueueList.insertNewQueue(this, '+temp.seq+')" class="btn btn-outline-dark btn-sm">추가</button></td>')
 			$('#sample-video-list tbody').append($tr);
 		}
 	});
@@ -186,19 +316,36 @@
 			$tr.append('<td class="td-center">' + temp.elapsedTime/1000 + '초</td>')
 			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
 			$tr.append('<td>' + temp.ssim + '</td>');
-			$tr.append('<td class="td-center">' + temp.assignedServerId + '</td>');
+			var $td = $('<td class="td-center"></td>');
+			if (tempServer.status == 1 && temp.status == 'finished')
+				$td.append('<a href="http://'+tempServer.addr+'/EncodingServer/download/encoded?id='+temp.seq+'">영상</a> ');
+			else
+				$td.append('<span style="color: #aaa;">영상</span> ');
+			if (tempServer.status == 1 && temp.status != 'waiting' && temp.status != 'encoding')
+				$td.append('<a href="http://'+tempServer.addr+'/EncodingServer/download/log?id='+temp.seq+'">로그</a> ');
+			else
+				$td.append('<span style="color: #aaa;">로그</span> ');
+			if (tempServer.status == 1 && temp.status == 'finished')
+				$td.append('<a href="http://'+tempServer.addr+'/EncodingServer/download/thumb?id='+temp.seq+'">썸네일</a> ');
+			else
+				$td.append('<span style="color: #aaa;">썸네일</span> ');
+			$tr.append($td);
 			if (chartDataGenerator.queueIndexList.has(temp.seq))
 				$tr.find('td:eq(0) input').prop('checked', true);
 			$('#encoded-video-list tbody').append($tr);
 		}
 	})
 	
-	function queueCheck(dom) {
-		if ($(dom).prop('checked'))
-			chartDataQueueIndexList.add(Number($(dom).parent().parent().find('td:eq(1)').text()));
-		else
-			chartDataQueueIndexList.delete(Number($(dom).parent().parent().find('td:eq(1)').text()));
-		console.log(chartDataQueueIndexList);
+	encodingQueueList.insertNewQueue = function(dom, seq) {
+		var param = {};
+		param.seq = seq;
+		param.presetCode = $(dom).parent().find('input').val();
+		$.post('/SCV/process/addQueue', param, function(json) {
+			if (json.statusMsg == 'OK')
+				toastr["success"]("인코딩 대기열이 성공적으로 생성되었습니다.");
+			else
+				toastr["error"]("서버 에러 발생!");
+		});
 	}
 	
 	var chartDataGenerator = {
@@ -225,7 +372,7 @@
 				var queueList = json.resultData.encodingQueueList;
 				for (var i in queueList) {
 					_this.chartData.push({
-						preset : queueList[i].presetCode,
+						preset : queueList[i].seq + '-' + queueList[i].presetCode,
 						duration : queueList[i].elapsedTime/1000,
 						volumeDiff : -queueList[i].volumeDifference,
 						ssim : queueList[i].ssim
@@ -393,6 +540,7 @@
 							if (serverList.list[j].seq == queueList[0].assignedServerId)
 								hostName1 = serverList.list[j].addr;
 						$('#sample-video-first video').get(0).src = 'http://' + hostName1 + '/EncodingServer/download/stream?id=' + $('#sample-video-first input').val();
+						$('#sample_video_preset_text_1').text(' / [ ' + queueList[0].presetCode + ' ]');
 						$('#sample-video-first video').get(0).load();
 					}
 					else if (valFlag == 2) {
@@ -400,6 +548,7 @@
 							if (serverList.list[j].seq == queueList[0].assignedServerId)
 								hostName2 = serverList.list[j].addr;
 						$('#sample-video-second video').get(0).src = 'http://' + hostName2 + '/EncodingServer/download/encoded?id=' + $('#sample-video-second input').val();
+						$('#sample_video_preset_text_2').text(' / [ ' + queueList[0].presetCode + ' ]');
 						$('#sample-video-second video').get(0).load();
 					}
 					else {
@@ -410,8 +559,10 @@
 							if (serverList.list[j].seq == queueList[1].assignedServerId)
 								hostName2 = serverList.list[j].addr;
 						$('#sample-video-first video').get(0).src = 'http://' + hostName1 + '/EncodingServer/download/encoded?id=' + $('#sample-video-first input').val();
+						$('#sample_video_preset_text_1').text(' / [ ' + queueList[0].presetCode + ' ]');
 						$('#sample-video-first video').get(0).load();
 						$('#sample-video-second video').get(0).src = 'http://' + hostName2 + '/EncodingServer/download/encoded?id=' + $('#sample-video-second input').val();
+						$('#sample_video_preset_text_2').text(' / [ ' + queueList[1].presetCode + ' ]');
 						$('#sample-video-second video').get(0).load();
 					}
 				});
@@ -440,9 +591,10 @@
 	<div class="nav nav-tabs" role="tablist">
 		<a id="server-list-table-tab" class="nav-item nav-link active" data-toggle="tab" href="#server-list-table" role="tab" aria-controls="server-list-table" aria-selected="true">인코딩 서버 목록</a>
 		<a id="sample-video-list-table-tab" class="nav-item nav-link" data-toggle="tab" href="#sample-video-list-table" role="tab" aria-controls="sample-video-list-table" aria-selected="true">샘플 비디오 목록</a>
+		<a id="encoding-preset-list-tab" class="nav-item nav-link" data-toggle="tab" href="#encoding-preset-list" role="tab" aria-controls="encoding-preset-list" aria-selected="true">인코딩 옵션 관리</a>
 		<a id="queue-list-table-tab" class="nav-item nav-link" data-toggle="tab" href="#queue-list-table" role="tab" aria-controls="queue-list-table" aria-selected="true">인코딩 큐 목록</a>
 		<a id="result-chart-tab" class="nav-item nav-link" data-toggle="tab" href="#result-chart" role="tab" aria-controls="result-chart" aria-selected="false" onclick="setTimeout(function() {chart.reinit()}, 100)">결과 차트</a>
-		<a id="play-result-video-tab" class="nav-item nav-link" data-toggle="tab" href="#play-result-video" role="tab" aria-controls="play-result-video" aria-selected="true" onclick="videoController.reload()">결과 비디오 재생</a>
+		<a id="play-result-video-tab" class="nav-item nav-link" data-toggle="tab" href="#play-result-video" role="tab" aria-controls="play-result-video" aria-selected="true">결과 비디오 재생</a>
 	</div>
 </nav>
 
@@ -492,8 +644,8 @@
 						<th>너비</th>
 						<th>높이</th>
 						<th>저장서버</th>
-						<th>등록일자</th>
 						<th>다운</th>
+						<th>인코딩 대기열 추가</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -506,6 +658,72 @@
 								<button onclick="sampleVideoList.prevPage()" class="btn btn-outline-dark btn-sm">prev</button>
 								<button onclick="sampleVideoList.refresh()" class="btn btn-outline-dark btn-sm">refresh</button>
 								<button onclick="sampleVideoList.nextPage()" class="btn btn-outline-dark btn-sm">next</button>
+							</div>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+	<div id="encoding-preset-list" class="tab-pane fade" role="tabpanel" aria-labelledby="encoding-preset-list-tab">
+		<div style="display: inline-block; height: 700px; width: 400px; overflow-y: scroll; margin: 30px auto;">
+			<datalist id="preset-data-list"></datalist>
+			<table id="preset-list" class="table table-striped table-bordered table-hover table-sm">
+				<thead class="thead-dark">
+					<tr>
+						<th>코드</th>
+						<th>설명</th>
+					</tr>
+				</thead>
+				<tbody>
+				
+				</tbody>
+				<tfoot style="text-align: right;">
+					<tr>
+						<td colspan="2" style="text-align: center; font-weight: bold;">
+							신규 프리셋 작성
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							프리셋 코드  : <input name="preset-option-list_code">
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							설명 : <input name="preset-option-list_desc">
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<button onclick="modPreset.addNewPreset()" class="btn btn-outline-dark btn-sm">추가하기</button>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+		<div style="display: inline-block; height: 700px; width: calc(100vw - 452px); overflow-y: scroll; margin: 30px auto;">
+			<table id="preset-option-list" class="table table-striped table-bordered table-hover table-sm">
+				<thead class="thead-dark">
+					<tr>
+						<th>옵션명</th>
+						<th>옵션값</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td colspan="3" class="td-center">
+							좌측에서 프리셋을 선택해주세요.
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="12">
+							<div style="text-align: right;">
+								<button onclick="modPreset.add()" class="btn btn-outline-dark btn-sm">옵션요소 추가</button>
+								<button onclick="modPreset.commit()" class="btn btn-outline-dark btn-sm">저장</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							</div>
 						</td>
 					</tr>
@@ -527,7 +745,7 @@
 						<th>소요시간</th>
 						<th>등록일자</th>
 						<th>SSIM</th>
-						<th>등록서버</th>
+						<th>다운</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -553,11 +771,11 @@
 	<div id="play-result-video" class="tab-pane fade" role="tabpanel" aria-labelledby="play-result-video">
 		<div>
 			<div class="sample-video-area" id="sample-video-first">
-				<h5>Sample video 1 seq : <input type="number" value="0" style="width: 5rem;"></h5>
+				<h5>Sample video 1 seq : <input type="number" value="0" style="width: 5rem;"> <span id="sample_video_preset_text_1"></span></h5>
 				<video preload="none" style="width: 100%;" controls="controls"></video>
 			</div>
 			<div class="sample-video-area" id="sample-video-second">
-				<h5>Sample video 2 seq : <input type="number" value="0" style="width: 5rem;"></h5>
+				<h5>Sample video 2 seq : <input type="number" value="0" style="width: 5rem;"> <span id="sample_video_preset_text_2"></span></h5>
 				<video preload="none" muted="muted" style="width: 100%;" controls="controls"></video>
 			</div>
 			<hr style="margin-top: 0.2rem;">

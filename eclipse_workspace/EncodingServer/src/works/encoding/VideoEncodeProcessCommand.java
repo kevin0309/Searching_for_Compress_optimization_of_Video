@@ -34,6 +34,8 @@ public class VideoEncodeProcessCommand implements WindowsAppProcessOptions {
 			if (opt.getOptionValue() != null)
 				temp.add(opt.getOptionValue());
 		}
+		temp.add("-max_muxing_queue_size");
+		temp.add("9999");
 		temp.add(newPath);
 		
 		String[] res = new String[temp.size()];

@@ -1,9 +1,10 @@
-package encoding.dao;
+package encodingQueue.dao;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
-import encoding.vo.EncodingQueueVO;
+import encodingQueue.vo.EncodingQueueVO;
 import framework.jdbc.DBMng;
 import framework.util.LogUtil;
 
@@ -68,6 +69,25 @@ public class EncodingQueueDAO {
 		} catch (SQLException e) {
 			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
 			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
+	
+	public void insertQueue(int fid, int assingnedServerId, String presetCode) {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("insert into encoding_queue values (null, ?, ?, ?, null, null, null, ?, null, null, ?)");
+			db.setInt(fid);
+			db.setString(presetCode);
+			db.setString("waiting");
+			db.setInt(assingnedServerId);
+			db.setDate(new Date());
+			db.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		} finally {
 			db.close();
 		}

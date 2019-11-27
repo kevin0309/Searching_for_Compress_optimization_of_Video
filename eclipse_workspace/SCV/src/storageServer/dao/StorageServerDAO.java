@@ -1,16 +1,16 @@
-package encoding.dao;
+package storageServer.dao;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import encoding.vo.EncodingServerVO;
 import framework.jdbc.DBMng;
 import framework.util.LogUtil;
+import storageServer.vo.StorageServerVO;
 
-public class EncodingServerDAO {
-	public ArrayList<EncodingServerVO> getServerList(int offset, int amount) {
+public class StorageServerDAO {
+	public ArrayList<StorageServerVO> getServerList(int offset, int amount) {
 		DBMng db = null;
-		ArrayList<EncodingServerVO> res = new ArrayList<>();
+		ArrayList<StorageServerVO> res = new ArrayList<>();
 		
 		try {
 			db = new DBMng();
@@ -20,7 +20,7 @@ public class EncodingServerDAO {
 			db.execute();
 			
 			while (db.next())
-				res.add(new EncodingServerVO(db.getInt(1), db.getString(2), db.getString(3), 
+				res.add(new StorageServerVO(db.getInt(1), db.getString(2), db.getString(3), 
 						db.getString(4), db.getInt(5), db.getDate(6)));
 			return res;
 		} catch (SQLException e) {

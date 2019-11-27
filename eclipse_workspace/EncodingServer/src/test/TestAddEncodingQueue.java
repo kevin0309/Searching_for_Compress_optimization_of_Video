@@ -32,6 +32,8 @@ public class TestAddEncodingQueue implements AjaxRequestHandler {
 			db(fid, sid, "crf_18_fast");
 			db(fid, sid, "crf_18_medium");
 			db(fid, sid, "crf_18_slow");
+			db(fid, sid, "crf_18_slower");
+			db(fid, sid, "crf_18_veryslow");
 			db(fid, sid, "crf_21_ultrafast");
 			db(fid, sid, "crf_21_superfast");
 			db(fid, sid, "crf_21_veryfast");
@@ -39,6 +41,8 @@ public class TestAddEncodingQueue implements AjaxRequestHandler {
 			db(fid, sid, "crf_21_fast");
 			db(fid, sid, "crf_21_medium");
 			db(fid, sid, "crf_21_slow");
+			db(fid, sid, "crf_21_slower");
+			db(fid, sid, "crf_21_veryslow");
 			db(fid, sid, "crf_24_ultrafast");
 			db(fid, sid, "crf_24_superfast");
 			db(fid, sid, "crf_24_veryfast");
@@ -46,6 +50,8 @@ public class TestAddEncodingQueue implements AjaxRequestHandler {
 			db(fid, sid, "crf_24_fast");
 			db(fid, sid, "crf_24_medium");
 			db(fid, sid, "crf_24_slow");
+			db(fid, sid, "crf_24_slower");
+			db(fid, sid, "crf_24_veryslow");
 			db(fid, sid, "crf_27_ultrafast");
 			db(fid, sid, "crf_27_superfast");
 			db(fid, sid, "crf_27_veryfast");
@@ -53,6 +59,8 @@ public class TestAddEncodingQueue implements AjaxRequestHandler {
 			db(fid, sid, "crf_27_fast");
 			db(fid, sid, "crf_27_medium");
 			db(fid, sid, "crf_27_slow");
+			db(fid, sid, "crf_27_slower");
+			db(fid, sid, "crf_27_veryslow");
 		}
 		else
 			db(fid, sid, pCode);

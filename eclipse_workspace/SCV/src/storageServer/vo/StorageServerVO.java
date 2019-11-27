@@ -1,15 +1,15 @@
-package encoding.vo;
+package storageServer.vo;
 
 import java.util.Date;
 
-public class EncodingServerVO {
+public class StorageServerVO {
 	private int seq;
 	private String desc;
 	private String address;
 	private String macAddress;
 	private int status;
 	private Date regdate;
-	public EncodingServerVO(int seq, String desc, String address, String macAddress, int status, Date regdate) {
+	public StorageServerVO(int seq, String desc, String address, String macAddress, int status, Date regdate) {
 		super();
 		this.seq = seq;
 		this.desc = desc;

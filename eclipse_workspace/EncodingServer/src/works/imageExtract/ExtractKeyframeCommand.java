@@ -22,11 +22,19 @@ public class ExtractKeyframeCommand implements WindowsAppProcessOptions {
 		temp.add(ServerConfig.getFFMPEGPath());
 		temp.add("-i");
 		temp.add(videoPath);
-		temp.add("-vf");
 		//temp.add("\"select=eq(pict_type\\,I)\"");
 		//temp.add("-vsync");
 		//temp.add("vfr");
+		
+		
+		temp.add("-vf");
 		temp.add("fps=1/2");
+		
+		//temp.add("-vframes");
+		//temp.add("1");
+		//temp.add("-ss");
+		//temp.add("30");
+		
 		temp.add(videoThumbPath);
 		
 		String[] res = new String[temp.size()];

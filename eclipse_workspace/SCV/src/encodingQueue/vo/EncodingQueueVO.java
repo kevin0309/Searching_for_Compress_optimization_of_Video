@@ -1,4 +1,4 @@
-package encoding.vo;
+package encodingQueue.vo;
 
 import java.util.Date;
 

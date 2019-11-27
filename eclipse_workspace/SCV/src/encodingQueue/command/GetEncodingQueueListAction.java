@@ -1,4 +1,4 @@
-package encoding.command;
+package encodingQueue.command;
 
 import java.util.ArrayList;
 
@@ -9,12 +9,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 
-import encoding.dao.EncodingQueueDAO;
-import encoding.dao.SampleVideoDAO;
-import encoding.vo.EncodingQueueVO;
-import encoding.vo.SampleVideoVO;
+import encodingQueue.dao.EncodingQueueDAO;
+import encodingQueue.vo.EncodingQueueVO;
 import framework.servlet.controller.handler.AjaxRequestHandler;
 import framework.util.DateUtil;
+import sampleVideo.dao.SampleVideoDAO;
+import sampleVideo.vo.SampleVideoVO;
 
 public class GetEncodingQueueListAction implements AjaxRequestHandler {
 
