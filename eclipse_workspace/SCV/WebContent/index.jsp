@@ -606,6 +606,28 @@
 				<tbody>
 				
 				</tbody>
+				<tfoot style="text-align: right;">
+					<tr>
+						<td colspan="2" style="text-align: center; font-weight: bold;">
+							신규 프리셋 작성
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							프리셋 코드  : <input name="preset-option-list_code" disabled="disabled">
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							설명 : <input name="preset-option-list_code">
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<button onclick="modPreset.addNewPreset()" class="btn btn-outline-dark btn-sm">저장하기</button>
+						</td>
+					</tr>
+				</tfoot>
 			</table>
 		</div>
 		<div style="display: inline-block; height: 700px; width: calc(100vw - 452px); overflow-y: scroll;">
@@ -635,10 +657,6 @@
 					</tr>
 				</tfoot>
 			</table>
-			<div>
-				프리셋 코드 <input name="preset-option-list_code" disabled="disabled"> 설명 <input name="preset-option-list_code">
-				<button onclick="modPreset.addNewPreset()" class="btn btn-outline-dark btn-sm">새로운 프리셋 작성</button>
-			</div>
 		</div>
 	</div>
 	<div id="queue-list-table" class="tab-pane fade show" role="tabpanel" aria-labelledby="queue-list-table-tab">

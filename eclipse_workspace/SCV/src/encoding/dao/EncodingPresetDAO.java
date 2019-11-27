@@ -17,6 +17,7 @@ public class EncodingPresetDAO {
 		try {
 			db = new DBMng();
 			db.setQuery("select * from encoding_preset order by code asc");
+			db.setAutoClose(false);
 			db.execute();
 			
 			while (db.next()) {
@@ -25,6 +26,7 @@ public class EncodingPresetDAO {
 				DBMng db2 = null;
 				try {
 					db2 = new DBMng();
+					db2.setAutoClose(false);
 					db2.setQuery("select * from encoding_preset_option where preset_code = ? order by orderby asc");
 					db2.setString(temp.getCode());
 					db2.execute();
