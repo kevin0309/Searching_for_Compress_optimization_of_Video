@@ -1,9 +1,9 @@
-package encoding.dao;
+package encodingQueue.dao;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import encoding.vo.EncodingQueueVO;
+import encodingQueue.vo.EncodingQueueVO;
 import framework.jdbc.DBMng;
 import framework.util.LogUtil;
 

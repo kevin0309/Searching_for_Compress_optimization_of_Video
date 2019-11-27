@@ -1,11 +1,11 @@
-package encoding.dao;
+package sampleVideo.dao;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import encoding.vo.SampleVideoVO;
 import framework.jdbc.DBMng;
 import framework.util.LogUtil;
+import sampleVideo.vo.SampleVideoVO;
 
 /**
  * DB sample_video 테이블에 대응되는 DAO

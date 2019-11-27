@@ -1,4 +1,4 @@
-package encoding.command;
+package encodingPreset.command;
 
 import java.util.ArrayList;
 
@@ -9,11 +9,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 
-import encoding.dao.EncodingPresetDAO;
-import encoding.vo.EncodingPresetOptionVO;
-import encoding.vo.EncodingPresetVO;
+import encodingPreset.dao.EncodingPresetDAO;
+import encodingPreset.vo.EncodingPresetOptionVO;
+import encodingPreset.vo.EncodingPresetVO;
 import framework.servlet.controller.handler.AjaxRequestHandler;
-import framework.util.DateUtil;
 
 public class GetEncodingPresetListAction implements AjaxRequestHandler {
 

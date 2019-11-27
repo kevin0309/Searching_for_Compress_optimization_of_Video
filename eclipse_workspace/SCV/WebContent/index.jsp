@@ -164,6 +164,7 @@
 				if (this.cur == null)
 					return;
 				this.cur.opts.push({optionName: null, optionValue: null});
+				this.save();
 				presetList.choose(this.curIndex);
 			},
 			del: function(index) {
@@ -175,10 +176,55 @@
 			save: function() {
 				if (this.cur == null)
 					return;
-				console.log(this.cur);
+				var _this = this;
+				var index = 0;
+				$('#preset-option-list tbody>tr').each(function() {
+					var optName = $(this).find('td:eq(0) input').val();
+					if (optName == '')
+						optName = null;
+					_this.cur.opts[index].optionName = optName;
+					var optDesc = $(this).find('td:eq(1) input').val();
+					if (optDesc == '')
+						optDesc = null;
+					_this.cur.opts[index++].optionValue = optDesc;
+				});
+			},
+			commit: function() {
+				if (this.cur == null)
+					return;
+				
+				this.save();
+				for (var i = this.cur.opts.length - 1; i > -1; i--) {
+					if (this.cur.opts[i].optionName == null)
+						this.cur.opts.splice(i, 1);
+				}
+
+				var param = {};
+				param.presetCode = this.cur.code;
+				param.data = [];
+				for (var i in this.cur.opts) {
+					var temp = {};
+					temp.optionName = this.cur.opts[i].optionName;
+					temp.optionValue = this.cur.opts[i].optionValue;
+					temp.orderby = i;
+					param.data.push(temp);
+				}
+				param.data = JSON.stringify(param.data);
+				
+				$.post('/SCV/process/updatePresetOptions', param, function(json) {
+					presetList.choose(modPreset.curIndex);
+					toastr["success"](param.presetCode + ' - 성공적으로 업데이트 되었습니다.');
+				});
 			},
 			addNewPreset: function() {
+				var param = {};
+				param.presetCode = $('input[name=preset-option-list_code]').val();
+				param.desc = $('input[name=preset-option-list_desc]').val();
 				
+				$.post('/SCV/process/insertPreset', param, function() {
+					presetList.refresh();
+					toastr["success"](param.presetCode + ' - 성공적으로 추가되었습니다.');
+				});
 			}
 	}
 	
@@ -265,20 +311,25 @@
 			$tr.append('<td class="td-center">' + temp.elapsedTime/1000 + '초</td>')
 			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
 			$tr.append('<td>' + temp.ssim + '</td>');
-			$tr.append('<td class="td-center">' + temp.assignedServerId + '</td>');
+			var $td = $('<td class="td-center"></td>');
+			if (tempServer.status == 1 && temp.status == 'finished')
+				$td.append('<a href="http://'+tempServer.addr+'/EncodingServer/download/encoded?id='+temp.seq+'">영상</a> ');
+			else
+				$td.append('<span style="color: #aaa;">영상</span> ');
+			if (tempServer.status == 1 && temp.status != 'waiting' && temp.status != 'encoding')
+				$td.append('<a href="http://'+tempServer.addr+'/EncodingServer/download/log?id='+temp.seq+'">로그</a> ');
+			else
+				$td.append('<span style="color: #aaa;">로그</span> ');
+			if (tempServer.status == 1 && temp.status == 'finished')
+				$td.append('<a href="http://'+tempServer.addr+'/EncodingServer/download/thumb?id='+temp.seq+'">썸네일</a> ');
+			else
+				$td.append('<span style="color: #aaa;">썸네일</span> ');
+			$tr.append($td);
 			if (chartDataGenerator.queueIndexList.has(temp.seq))
 				$tr.find('td:eq(0) input').prop('checked', true);
 			$('#encoded-video-list tbody').append($tr);
 		}
 	})
-	
-	function queueCheck(dom) {
-		if ($(dom).prop('checked'))
-			chartDataQueueIndexList.add(Number($(dom).parent().parent().find('td:eq(1)').text()));
-		else
-			chartDataQueueIndexList.delete(Number($(dom).parent().parent().find('td:eq(1)').text()));
-		console.log(chartDataQueueIndexList);
-	}
 	
 	var chartDataGenerator = {
 		queueIndexList : new Set(),
@@ -472,6 +523,7 @@
 							if (serverList.list[j].seq == queueList[0].assignedServerId)
 								hostName1 = serverList.list[j].addr;
 						$('#sample-video-first video').get(0).src = 'http://' + hostName1 + '/EncodingServer/download/stream?id=' + $('#sample-video-first input').val();
+						$('#sample_video_preset_text_1').text(' / [ ' + queueList[0].presetCode + ' ]');
 						$('#sample-video-first video').get(0).load();
 					}
 					else if (valFlag == 2) {
@@ -479,6 +531,7 @@
 							if (serverList.list[j].seq == queueList[0].assignedServerId)
 								hostName2 = serverList.list[j].addr;
 						$('#sample-video-second video').get(0).src = 'http://' + hostName2 + '/EncodingServer/download/encoded?id=' + $('#sample-video-second input').val();
+						$('#sample_video_preset_text_2').text(' / [ ' + queueList[0].presetCode + ' ]');
 						$('#sample-video-second video').get(0).load();
 					}
 					else {
@@ -489,8 +542,10 @@
 							if (serverList.list[j].seq == queueList[1].assignedServerId)
 								hostName2 = serverList.list[j].addr;
 						$('#sample-video-first video').get(0).src = 'http://' + hostName1 + '/EncodingServer/download/encoded?id=' + $('#sample-video-first input').val();
+						$('#sample_video_preset_text_1').text(' / [ ' + queueList[0].presetCode + ' ]');
 						$('#sample-video-first video').get(0).load();
 						$('#sample-video-second video').get(0).src = 'http://' + hostName2 + '/EncodingServer/download/encoded?id=' + $('#sample-video-second input').val();
+						$('#sample_video_preset_text_2').text(' / [ ' + queueList[1].presetCode + ' ]');
 						$('#sample-video-second video').get(0).load();
 					}
 				});
@@ -523,7 +578,7 @@
 		<a id="queue-list-table-tab" class="nav-item nav-link" data-toggle="tab" href="#queue-list-table" role="tab" aria-controls="queue-list-table" aria-selected="true">인코딩 큐 목록</a>
 		<a id="add-queue-tab" class="nav-item nav-link" data-toggle="tab" href="#add-queue" role="tab" aria-controls="add-queue" aria-selected="true">인코딩 큐 추가</a>
 		<a id="result-chart-tab" class="nav-item nav-link" data-toggle="tab" href="#result-chart" role="tab" aria-controls="result-chart" aria-selected="false" onclick="setTimeout(function() {chart.reinit()}, 100)">결과 차트</a>
-		<a id="play-result-video-tab" class="nav-item nav-link" data-toggle="tab" href="#play-result-video" role="tab" aria-controls="play-result-video" aria-selected="true" onclick="videoController.reload()">결과 비디오 재생</a>
+		<a id="play-result-video-tab" class="nav-item nav-link" data-toggle="tab" href="#play-result-video" role="tab" aria-controls="play-result-video" aria-selected="true">결과 비디오 재생</a>
 	</div>
 </nav>
 
@@ -614,17 +669,17 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							프리셋 코드  : <input name="preset-option-list_code" disabled="disabled">
+							프리셋 코드  : <input name="preset-option-list_code">
 						</td>
 					</tr>
 					<tr>
 						<td colspan="2">
-							설명 : <input name="preset-option-list_code">
+							설명 : <input name="preset-option-list_desc">
 						</td>
 					</tr>
 					<tr>
 						<td colspan="2">
-							<button onclick="modPreset.addNewPreset()" class="btn btn-outline-dark btn-sm">저장하기</button>
+							<button onclick="modPreset.addNewPreset()" class="btn btn-outline-dark btn-sm">추가하기</button>
 						</td>
 					</tr>
 				</tfoot>
@@ -651,7 +706,7 @@
 						<td colspan="12">
 							<div style="text-align: right;">
 								<button onclick="modPreset.add()" class="btn btn-outline-dark btn-sm">옵션요소 추가</button>
-								<button onclick="modPreset.save()" class="btn btn-outline-dark btn-sm">저장</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<button onclick="modPreset.commit()" class="btn btn-outline-dark btn-sm">저장</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							</div>
 						</td>
 					</tr>
@@ -673,7 +728,7 @@
 						<th>소요시간</th>
 						<th>등록일자</th>
 						<th>SSIM</th>
-						<th>등록서버</th>
+						<th>다운</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -702,11 +757,11 @@
 	<div id="play-result-video" class="tab-pane fade" role="tabpanel" aria-labelledby="play-result-video">
 		<div>
 			<div class="sample-video-area" id="sample-video-first">
-				<h5>Sample video 1 seq : <input type="number" value="0" style="width: 5rem;"></h5>
+				<h5>Sample video 1 seq : <input type="number" value="0" style="width: 5rem;"> <span id="sample_video_preset_text_1"></span></h5>
 				<video preload="none" style="width: 100%;" controls="controls"></video>
 			</div>
 			<div class="sample-video-area" id="sample-video-second">
-				<h5>Sample video 2 seq : <input type="number" value="0" style="width: 5rem;"></h5>
+				<h5>Sample video 2 seq : <input type="number" value="0" style="width: 5rem;"> <span id="sample_video_preset_text_2"></span></h5>
 				<video preload="none" muted="muted" style="width: 100%;" controls="controls"></video>
 			</div>
 			<hr style="margin-top: 0.2rem;">

@@ -1,10 +1,11 @@
-package encoding.dao;
+package encodingPreset.dao;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
-import encoding.vo.EncodingPresetOptionVO;
-import encoding.vo.EncodingPresetVO;
+import encodingPreset.vo.EncodingPresetOptionVO;
+import encodingPreset.vo.EncodingPresetVO;
 import framework.jdbc.DBMng;
 import framework.util.LogUtil;
 
@@ -71,4 +72,57 @@ public class EncodingPresetDAO {
 		return -1;
 	}
 	
+	public void insertNewPreset(String code, String name, Date regdate) {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("insert into encoding_preset values (?, ?, ?)");
+			db.setString(code);
+			db.setString(name);
+			db.setDate(regdate);
+			db.execute();
+		} catch (SQLException e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
+	
+	public void deletePresetOptions(String presetCode) {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("delete from encoding_preset_option where preset_code = ?");
+			db.setString(presetCode);
+			db.execute();
+		} catch (SQLException e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
+	
+	public void insertPresetOption(String presetCode, String optionName, String optionValue, int orderby, Date regdate) {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("insert into encoding_preset_option values (null, ?, ?, ?, ?, ?)");
+			db.setString(presetCode);
+			db.setString(optionName);
+			db.setString(optionValue);
+			db.setInt(orderby);
+			db.setDate(regdate);
+			db.execute();
+		} catch (SQLException e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
 }

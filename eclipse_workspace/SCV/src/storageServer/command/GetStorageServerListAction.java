@@ -1,4 +1,4 @@
-package encoding.command;
+package storageServer.command;
 
 import java.util.ArrayList;
 
@@ -9,17 +9,17 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 
-import encoding.dao.SampleVideoDAO;
-import encoding.vo.SampleVideoVO;
 import framework.servlet.controller.handler.AjaxRequestHandler;
 import framework.util.DateUtil;
 import framework.util.LogUtil;
+import storageServer.dao.StorageServerDAO;
+import storageServer.vo.StorageServerVO;
 
-public class GetSampleVideoListAction implements AjaxRequestHandler {
+public class GetStorageServerListAction implements AjaxRequestHandler {
 
 	@Override
 	public String getURL() {
-		return "/process/getSampleVideoList";
+		return "/process/getServerList";
 	}
 
 	@SuppressWarnings("unchecked")
@@ -36,27 +36,21 @@ public class GetSampleVideoListAction implements AjaxRequestHandler {
 		}
 		
 		JSONObject res = new JSONObject();
-		SampleVideoDAO dao = new SampleVideoDAO();
+		StorageServerDAO dao = new StorageServerDAO();
 		
-		//비디오 리스트 조회
-		ArrayList<SampleVideoVO> vList = dao.selectSampleVideoList(offset, amount);
-		JSONArray vList2 = new JSONArray();
-		for (SampleVideoVO sv : vList) {
-			JSONObject sv2 = new JSONObject();
-			sv2.put("seq", sv.getSeq());
-			sv2.put("fileName", sv.getFileName());
-			sv2.put("fileExt", sv.getFileExt());
-			sv2.put("mimeType", sv.getMimeType());
-			sv2.put("fileVolume", sv.getVolumeStr());
-			sv2.put("vCodec", sv.getvCodec());
-			sv2.put("aCodec", sv.getaCodec());
-			sv2.put("width", sv.getWidth());
-			sv2.put("height", sv.getHeight());
-			sv2.put("storedServerId", sv.getStorageServerId());
-			sv2.put("regdate", DateUtil.toString(sv.getRegdate()));
-			vList2.add(sv2);
+		ArrayList<StorageServerVO> serverList = dao.getServerList(offset, amount);
+		JSONArray serverList2 = new JSONArray();
+		for (StorageServerVO server : serverList) {
+			JSONObject server2 = new JSONObject();
+			server2.put("seq", server.getSeq());
+			server2.put("desc", server.getDesc());
+			server2.put("addr", server.getAddress());
+			server2.put("macAddr", server.getMacAddress());
+			server2.put("status", server.getStatus());
+			server2.put("regdate", DateUtil.toString(server.getRegdate()));
+			serverList2.add(server2);
 		}
-		res.put("fileList", vList2);
+		res.put("serverList", serverList2);
 		
 		JSONObject entries = new JSONObject();
 		entries.put("offset", offset);

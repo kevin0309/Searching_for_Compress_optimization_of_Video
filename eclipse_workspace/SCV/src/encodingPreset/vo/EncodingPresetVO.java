@@ -1,4 +1,4 @@
-package encoding.vo;
+package encodingPreset.vo;
 
 import java.util.ArrayList;
 import java.util.Date;

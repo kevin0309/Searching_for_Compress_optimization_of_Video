@@ -69,6 +69,34 @@ public class EncodingQueueDAO {
 	}
 	
 	/**
+	 * encoding_queue.file_id, preset_code로 조회
+	 * @param seq
+	 * @return
+	 */
+	public EncodingQueueVO getEncodingWorkBySeq(int fileId, String presetCode) {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("select * from encoding_queue where file_id = ? and preset_code = ? order by seq desc limit 1");
+			db.setInt(fileId);
+			db.setString(presetCode);
+			db.execute();
+			if (db.next()) {
+				return new EncodingQueueVO(db.getInt(1), db.getInt(2), db.getString(3), 
+						db.getString(4), db.getLong(5), db.getDate(6), db.getDate(7), 
+						db.getInt(8), db.getDouble(9), db.getString(10), db.getDate(11));
+			}
+			else return null;
+		} catch (Exception e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
+	
+	/**
 	 * 작업 시작 시 상태 전환
 	 * @param seq
 	 * @param status
@@ -236,6 +264,52 @@ public class EncodingQueueDAO {
 		}
 	}
 	
+	/**
+	 * SSIM 연산 대기 상태 전환
+	 * @param seq
+	 * @param endDate
+	 * @param newDirectory
+	 */
+	public void updateCurWorkSSIMWaitStatus(int seq, Date endDate) {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("update encoding_queue set status = 'waiting_SSIM', e_date = ? where seq = ?");
+			db.setDate(endDate);
+			db.setInt(seq);
+			db.execute();
+		} catch (SQLException e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
+	
+	/**
+	 * 완료 후 상태 전환
+	 * @param seq
+	 * @param endDate
+	 * @param newDirectory
+	 */
+	public void updateCurWorkEndStatus(int seq, Date endDate) {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("update encoding_queue set status = 'finished', e_date = ? where seq = ?");
+			db.setDate(endDate);
+			db.setInt(seq);
+			db.execute();
+		} catch (SQLException e) {
+			LogUtil.printErrLog("logic error! ("+e.getLocalizedMessage()+")");
+			throw new RuntimeException(e);
+		} finally {
+			db.close();
+		}
+	}
+	
 	public ArrayList<EncodingQueueVO> getEncodingQueueList(int assignedServerId, int offset, int amount) {
 		DBMng db = null;
 		ArrayList<EncodingQueueVO> res = new ArrayList<>();
@@ -309,5 +383,24 @@ public class EncodingQueueDAO {
 		}
 		
 		return res;
+	}
+	
+	public void insertQueue(int fid, int assingnedServerId, String presetCode) {
+		DBMng db = null;
+		
+		try {
+			db = new DBMng();
+			db.setQuery("insert into encoding_queue values (null, ?, ?, ?, null, null, null, ?, null, null, ?)");
+			db.setInt(fid);
+			db.setString(presetCode);
+			db.setString("waiting");
+			db.setInt(assingnedServerId);
+			db.setDate(new Date());
+			db.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			db.close();
+		}
 	}
 }

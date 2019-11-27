@@ -34,6 +34,8 @@ public class EncodingQueue {
 	public static final int STATUS_WAIT = 100;
 	public static final int STATUS_WORKING = 200;
 	
+	public static final String ORIGINAL_CONV_PRESET_CODE = "original_conv";
+	
 	private static EncodingQueueDAO dao = new EncodingQueueDAO();
 	
 	public EncodingQueue() {
@@ -148,33 +150,45 @@ public class EncodingQueue {
 			}
 			
 			//SSIM 비교
-			LogUtil.printLog("Calculate SSIM start, encoding queue seq : " + curEncodingSeq + 
-					", preset : " + element.getPresetCode() + ", target : " + newPath);
-			final int compThumbAmount = 15; //0 ~ 30 second
-			double resSsims[] = new double[compThumbAmount];
-			double resSsim = 0;
-			String refImageTempPath = element.getVideo().getDirectory();
-			refImageTempPath = refImageTempPath.substring(0, refImageTempPath.lastIndexOf("."));
-			for (int i = 0; i < compThumbAmount; i++) {
-				try {
-					String refImagePath = refImageTempPath + String.format("/thumb%03d.jpg", i + 1);
-					String compImagePath = newThumbsPath + String.format("/thumb%03d.jpg", i + 1);
-					File refImageFile = new File(refImagePath);
-					File compImageFile = new File(compImagePath);
-					SsimCalculator sc = new SsimCalculator(refImageFile);
-					resSsims[i] = sc.compareTo(compImageFile);
-					resSsim += resSsims[i];
-				} catch (Exception e) {
-					e.printStackTrace();
-					dao.updateCurWorkSSIMErrorStatus(curEncodingSeq, new Date());
-					curStatus = STATUS_WAIT;
+			if (!element.getPresetCode().equals(ORIGINAL_CONV_PRESET_CODE)) {
+				LogUtil.printLog("Calculate SSIM start, encoding queue seq : " + curEncodingSeq + 
+						", preset : " + element.getPresetCode() + ", target : " + newPath);
+				final int compThumbAmount = 15; //0 ~ 30 second
+				double resSsims[] = new double[compThumbAmount];
+				double resSsim = 0;
+				EncodingQueueVO originalConv = dao.getEncodingWorkBySeq(new SampleVideoDAO().selectSampleVideoById(element.getFileId()).getSeq(), ORIGINAL_CONV_PRESET_CODE);
+				if (originalConv == null) {
+					dao.updateCurWorkSSIMWaitStatus(curEncodingSeq, new Date());
 					return;
 				}
+				String refImageTempPath = originalConv.getNewDirectory();
+				refImageTempPath = refImageTempPath.substring(0, refImageTempPath.lastIndexOf("."));
+				for (int i = 0; i < compThumbAmount; i++) {
+					try {
+						String refImagePath = refImageTempPath + String.format("/thumb%03d.jpg", i + 1);
+						String compImagePath = newThumbsPath + String.format("/thumb%03d.jpg", i + 1);
+						File refImageFile = new File(refImagePath);
+						File compImageFile = new File(compImagePath);
+						SsimCalculator sc = new SsimCalculator(refImageFile);
+						resSsims[i] = sc.compareTo(compImageFile);
+						resSsim += resSsims[i];
+					} catch (Exception e) {
+						e.printStackTrace();
+						dao.updateCurWorkSSIMErrorStatus(curEncodingSeq, new Date());
+						curStatus = STATUS_WAIT;
+						return;
+					}
+				}
+				resSsim /= compThumbAmount;
+				dao.updateCurWorkSSIMEndStatus(curEncodingSeq, new Date(), resSsim);
+				LogUtil.printLog("Calculate SSIM complete, encoding queue seq : " + curEncodingSeq + 
+						", preset : " + element.getPresetCode() + ", target : " + newPath);
 			}
-			resSsim /= compThumbAmount;
-			dao.updateCurWorkSSIMEndStatus(curEncodingSeq, new Date(), resSsim);
-			LogUtil.printLog("Calculate SSIM complete, encoding queue seq : " + curEncodingSeq + 
-					", preset : " + element.getPresetCode() + ", target : " + newPath);
+			else {
+				dao.updateCurWorkEndStatus(curEncodingSeq, new Date());
+				LogUtil.printLog("Origianl conv complete, encoding queue seq : " + curEncodingSeq + 
+						", preset : " + element.getPresetCode() + ", target : " + newPath);
+			}
 		}
 		curStatus = STATUS_WAIT;
 	}

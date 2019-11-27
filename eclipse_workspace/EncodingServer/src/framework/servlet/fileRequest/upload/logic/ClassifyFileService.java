@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import framework.SCVDAO;
 import framework.init.ServerConfig;
 import framework.init.ServerHddVO;
 import framework.servlet.fileRequest.SampleVideoDAO;
@@ -25,6 +26,8 @@ import framework.util.GenerateFilePathFactory;
 import framework.util.LogUtil;
 import framework.util.windowsAppProcessing.WindowsAppProcessBuilder;
 import framework.util.windowsAppProcessing.WindowsAppProcessOptions;
+import works.encoding.EncodingQueue;
+import works.encoding.EncodingQueueDAO;
 import works.imageExtract.ExtractKeyframeCommand;
 
 /**
@@ -149,9 +152,12 @@ public class ClassifyFileService {
 		uploadReqVO.setHeight((int)videoHeight);
 		uploadReqVO.setvCodec(videoCodec);
 		uploadReqVO.setaCodec(audioCodec);
-		
+
+		new SampleVideoDAO().insertNewSampleVideo(uploadReqVO);
+		int fid = new SCVDAO().lastInsertId();
+		new EncodingQueueDAO().insertQueue(fid, ServerConfig.getServerId(), EncodingQueue.ORIGINAL_CONV_PRESET_CODE);
 		//extract key frames
-		String newThumbsPath = pathFactory.makeNewThumbPath(null);
+		/*String newThumbsPath = pathFactory.makeNewThumbPath(null);
 		ExtractKeyframeCommand cmd2 = new ExtractKeyframeCommand(newPath, newThumbsPath + "thumb%03d.jpg");
 		WindowsAppProcessBuilder wapb2 = new WindowsAppProcessBuilder(newThumbsPath+"log.txt");
 		LogUtil.printLog("Extract Thumbnail start, sample video target : " + newPath);
@@ -160,9 +166,8 @@ public class ClassifyFileService {
 				LogUtil.printLog("Extract Thumbnail complete, sample video target : " + newThumbsPath);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		
-		new SampleVideoDAO().insertNewSampleVideo(uploadReqVO);
 	}
 	
 	/**
