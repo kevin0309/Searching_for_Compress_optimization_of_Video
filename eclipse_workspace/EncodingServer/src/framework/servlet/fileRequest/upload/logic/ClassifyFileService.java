@@ -28,7 +28,6 @@ import framework.util.windowsAppProcessing.WindowsAppProcessBuilder;
 import framework.util.windowsAppProcessing.WindowsAppProcessOptions;
 import works.encoding.EncodingQueue;
 import works.encoding.EncodingQueueDAO;
-import works.imageExtract.ExtractKeyframeCommand;
 
 /**
  * 파일의 종류에따라 서로 다른 경로에 저장, 다른 기능을 수행하도록 분류하는 기능

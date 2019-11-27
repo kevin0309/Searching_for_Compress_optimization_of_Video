@@ -108,8 +108,11 @@
 		var resEnt = resultJSON.resultData.result_entries;
 		var resPresetList = resultJSON.resultData.presetList;
 		$('#preset-list tbody').empty();
+		$('#preset-data-list').empty();
 		presetList.total = resEnt.total;
 		presetList.list = resPresetList;
+		
+		
 		
 		for (var i in resPresetList) {
 			var temp = resPresetList[i];
@@ -118,6 +121,8 @@
 			$tr.append('<td>' + temp.name + '</td>');
 			//$tr.append('<td class="td-center">' + temp.regdate + '</td>');
 			$('#preset-list tbody').append($tr);
+			
+			$('#preset-data-list').append('<option value="'+temp.code+'">'+temp.name+'</option>');
 		}
 	});
 	
@@ -263,11 +268,11 @@
 			$tr.append('<td class="td-center">' + temp.width + '</td>');
 			$tr.append('<td class="td-center">' + temp.height + '</td>');
 			$tr.append('<td class="td-center">' + temp.storedServerId + '</td>');
-			$tr.append('<td class="td-center">' + temp.regdate + '</td>');
 			if (tempServer.status == 1)
 				$tr.append('<td class="td-center"><a href="http://'+tempServer.addr+'/EncodingServer/download/original?id='+temp.seq+'">link</a></td>');
 			else
 				$tr.append('<td class="td-center" style="color: #aaa;">link</td>');
+			$tr.append('<td class="td-center"><input type="text" list="preset-data-list"> <button onclick="encodingQueueList.insertNewQueue(this, '+temp.seq+')" class="btn btn-outline-dark btn-sm">추가</button></td>')
 			$('#sample-video-list tbody').append($tr);
 		}
 	});
@@ -330,6 +335,18 @@
 			$('#encoded-video-list tbody').append($tr);
 		}
 	})
+	
+	encodingQueueList.insertNewQueue = function(dom, seq) {
+		var param = {};
+		param.seq = seq;
+		param.presetCode = $(dom).parent().find('input').val();
+		$.post('/SCV/process/addQueue', param, function(json) {
+			if (json.statusMsg == 'OK')
+				toastr["success"]("인코딩 대기열이 성공적으로 생성되었습니다.");
+			else
+				toastr["error"]("서버 에러 발생!");
+		});
+	}
 	
 	var chartDataGenerator = {
 		queueIndexList : new Set(),
@@ -576,7 +593,6 @@
 		<a id="sample-video-list-table-tab" class="nav-item nav-link" data-toggle="tab" href="#sample-video-list-table" role="tab" aria-controls="sample-video-list-table" aria-selected="true">샘플 비디오 목록</a>
 		<a id="encoding-preset-list-tab" class="nav-item nav-link" data-toggle="tab" href="#encoding-preset-list" role="tab" aria-controls="encoding-preset-list" aria-selected="true">인코딩 옵션 관리</a>
 		<a id="queue-list-table-tab" class="nav-item nav-link" data-toggle="tab" href="#queue-list-table" role="tab" aria-controls="queue-list-table" aria-selected="true">인코딩 큐 목록</a>
-		<a id="add-queue-tab" class="nav-item nav-link" data-toggle="tab" href="#add-queue" role="tab" aria-controls="add-queue" aria-selected="true">인코딩 큐 추가</a>
 		<a id="result-chart-tab" class="nav-item nav-link" data-toggle="tab" href="#result-chart" role="tab" aria-controls="result-chart" aria-selected="false" onclick="setTimeout(function() {chart.reinit()}, 100)">결과 차트</a>
 		<a id="play-result-video-tab" class="nav-item nav-link" data-toggle="tab" href="#play-result-video" role="tab" aria-controls="play-result-video" aria-selected="true">결과 비디오 재생</a>
 	</div>
@@ -628,8 +644,8 @@
 						<th>너비</th>
 						<th>높이</th>
 						<th>저장서버</th>
-						<th>등록일자</th>
 						<th>다운</th>
+						<th>인코딩 대기열 추가</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -650,7 +666,8 @@
 		</div>
 	</div>
 	<div id="encoding-preset-list" class="tab-pane fade" role="tabpanel" aria-labelledby="encoding-preset-list-tab">
-		<div style="display: inline-block; height: 700px; width: 400px; overflow-y: scroll;">
+		<div style="display: inline-block; height: 700px; width: 400px; overflow-y: scroll; margin: 30px auto;">
+			<datalist id="preset-data-list"></datalist>
 			<table id="preset-list" class="table table-striped table-bordered table-hover table-sm">
 				<thead class="thead-dark">
 					<tr>
@@ -685,7 +702,7 @@
 				</tfoot>
 			</table>
 		</div>
-		<div style="display: inline-block; height: 700px; width: calc(100vw - 452px); overflow-y: scroll;">
+		<div style="display: inline-block; height: 700px; width: calc(100vw - 452px); overflow-y: scroll; margin: 30px auto;">
 			<table id="preset-option-list" class="table table-striped table-bordered table-hover table-sm">
 				<thead class="thead-dark">
 					<tr>
@@ -747,9 +764,6 @@
 				</tfoot>
 			</table>
 		</div>
-	</div>
-	<div id="add-queue" class="tab-pane fade" role="tabpanel" aria-labelledby="add-queue-tab">
-		add queue
 	</div>
 	<div id="result-chart" class="tab-pane fade" role="tabpanel" aria-labelledby="result-chart-tab">
 		<div id="chartdiv" style="height: calc(100vh - 150px);"></div>
