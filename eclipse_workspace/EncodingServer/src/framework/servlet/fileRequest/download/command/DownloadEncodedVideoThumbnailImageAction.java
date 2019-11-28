@@ -73,7 +73,8 @@ public class DownloadEncodedVideoThumbnailImageAction implements FileDownloadHan
 		for (int i = 0; i < temp.length-1; i++)
 			thumbPath += temp[i] + "/";
 		thumbPath += fileName + "/thumb008.jpg";
-		File file = new File(thumbPath);
+		fileName = thumbPath;
+		File file = new File(fileName);
 		
 		if (!file.exists()) {
 			JSONObject resMsg = new JSONObject();
